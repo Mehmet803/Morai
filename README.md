@@ -385,19 +385,19 @@ Bu MORai v2.1 sayfasının özeti:
         }
 
         // 2) Görsel isteği
-        const imageTopic = detectImageTopic(text);
-        if (imageTopic) {
-            const searchTerm = getUnsplashQuery(imageTopic);
-            const url = "https://source.unsplash.com/600x400/?" + encodeURIComponent(searchTerm);
+        function detectImageTopic(text) {
+    const lower = text.toLowerCase();
+    const match = lower.match(/bana (.+?) (resmi|resim|fotoğraf|fotograf|göster)/i);
+    if (match && match[1]) return match[1].trim();
 
-            addTextMessage(
-                `“${imageTopic}” için bir görsel gösteriyorum 📷\nBu görüntü Unsplash'ten rastgele seçilen bir fotoğraftır.`,
-                "bot"
-            );
+    const match2 = lower.match(/(.+?) (resmi|resim|fotoğraf|fotograf)/i);
+    if (match2 && match2[1]) return match2[1].trim();
 
-            addImageMessage(url, "bot");
-            return;
-        }
+    if (lower.includes("resim") || lower.includes("fotoğraf") || lower.includes("fotograf")) {
+        return text;
+    }
+    return null;
+}
 
         // 3) Duygu / hâl cevapları
         const emo = emotionalReply(lower);
