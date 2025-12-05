@@ -201,12 +201,8 @@ Bu MORai v2.1 sayfasının özeti:
           • Vikipedi'de arama yapar (search API + summary)
           • Sonuç bulursa özet + "Kaynak: Vikipedi – başlık"
           • Bulamazsa "bulamadım, uydurmak istemiyorum" diye dürüstçe söyler
-  - Fotoğraf yükleme:
-      • File input'tan seçilen resmi URL.createObjectURL ile gösterir
-  - Sesle yazma:
-      • SpeechRecognition / webkitSpeechRecognition (tr-TR) ile konuşmayı metne çevirir.
-    `;
 
+const url = "https://images.weserv.nl/?url=source.unsplash.com/600x400/?" + encodeURIComponent(searchTerm);
     function saatAl() {
         const now = new Date();
         const h = String(now.getHours()).padStart(2, "0");
