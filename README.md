@@ -324,19 +324,34 @@ Bu MORai v2.1 sayfasının özeti:
 
     // Görsel isteklerini yakalama ("bana ... resmi göster" gibi)
     function detectImageTopic(text) {
-        const lower = text.toLowerCase();
-        const match = lower.match(/bana (.+?) (resmi|resim|fotoğraf|fotograf|göster)/i);
-        if (match && match[1]) return match[1].trim();
+    const lower = text.toLowerCase();
 
-        const match2 = lower.match(/(.+?) (resmi|resim|fotoğraf|fotograf)/i);
-        if (match2 && match2[1]) return match2[1].trim();
+    // Eğer mesajda resim/foto/fotoğraf/görsel geçiyorsa
+    // her koşulda bir görsel isteği olarak kabul et
+    if (
+        lower.includes("resim") ||
+        lower.includes("fotoğraf") ||
+        lower.includes("fotograf") ||
+        lower.includes("foto") ||
+        lower.includes("görsel") ||
+        lower.includes("gorsel")
+    ) {
+        // Boz ayı, kedi vs gibi özel bir şey geçiyorsa onu yakalamaya çalış
+        if (lower.includes("boz ayı")) return "brown bear";
+        if (lower.includes("ayı"))     return "bear";
+        if (lower.includes("kedi"))    return "cat";
+        if (lower.includes("köpek"))   return "dog";
+        if (lower.includes("dağ"))     return "mountain";
+        if (lower.includes("orman"))   return "forest";
+        if (lower.includes("deniz"))   return "sea";
 
-        if (lower.includes("resim") || lower.includes("fotoğraf") || lower.includes("fotograf")) {
-            return text;
-        }
-        return null;
+        // Hiçbiri yoksa, yine de mesajın tamamını konu kabul et
+        return text;
     }
 
+    // Hiç resim/foto kelimesi yoksa → resim isteği değildir
+    return null;
+}
     const imageKeywordMap = [
         { key: "boz ayı", query: "brown bear" },
         { key: "ayı",     query: "bear" },
