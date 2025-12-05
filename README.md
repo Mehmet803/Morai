@@ -323,34 +323,39 @@ Bu MORai v2.1 sayfasının özeti:
     }
 
     // Görsel isteklerini yakalama ("bana ... resmi göster" gibi)
-    function detectImageTopic(text) {
+   function detectImageTopic(text) {
     const lower = text.toLowerCase();
 
-    // Eğer mesajda resim/foto/fotoğraf/görsel geçiyorsa
-    // her koşulda bir görsel isteği olarak kabul et
-    if (
-        lower.includes("resim") ||
-        lower.includes("fotoğraf") ||
-        lower.includes("fotograf") ||
-        lower.includes("foto") ||
-        lower.includes("görsel") ||
-        lower.includes("gorsel")
-    ) {
-        // Boz ayı, kedi vs gibi özel bir şey geçiyorsa onu yakalamaya çalış
-        if (lower.includes("boz ayı")) return "brown bear";
-        if (lower.includes("ayı"))     return "bear";
-        if (lower.includes("kedi"))    return "cat";
-        if (lower.includes("köpek"))   return "dog";
-        if (lower.includes("dağ"))     return "mountain";
-        if (lower.includes("orman"))   return "forest";
-        if (lower.includes("deniz"))   return "sea";
+    // Mesajda resim / foto / fotoğraf / görsel kelimeleri geçiyorsa
+    // bunu bir görsel isteği olarak kabul et
+    const hasImageWord =
+        lower.includes("resim")   ||
+        lower.includes("resmi")   ||
+        lower.includes("fotoğraf")||
+        lower.includes("fotograf")||
+        lower.includes("foto")    ||
+        lower.includes("görsel")  ||
+        lower.includes("gorsel");
 
-        // Hiçbiri yoksa, yine de mesajın tamamını konu kabul et
-        return text;
+    if (!hasImageWord) {
+        // Hiç resim/foto kelimesi yoksa → görsel isteği değildir
+        return null;
     }
 
-    // Hiç resim/foto kelimesi yoksa → resim isteği değildir
-    return null;
+    // "bana X resmi / görseli / fotoğrafı" kalıbını yakalamaya çalış
+    const m1 = lower.match(/bana (.+?) (resmi|resim|fotoğraf|fotograf|görsel|gorsel)/i);
+    if (m1 && m1[1]) {
+        return m1[1].trim();
+    }
+
+    // Sadece "X resmi" gibi bir ifade varsa onu yakala
+    const m2 = lower.match(/(.+?) (resmi|resim|fotoğraf|fotograf|görsel|gorsel)/i);
+    if (m2 && m2[1]) {
+        return m2[1].trim();
+    }
+
+    // Hiçbiri tutmazsa, yine de tüm mesajı konu olarak dön
+    return text.trim();
 }
     const imageKeywordMap = [
         { key: "boz ayı", query: "brown bear" },
