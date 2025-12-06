@@ -12,7 +12,6 @@
       --card-bg: #020617;
       --border: rgba(148, 163, 184, 0.4);
       --accent: #8b5cf6;
-      --accent-soft: rgba(139, 92, 246, 0.12);
       --user-bubble: linear-gradient(135deg, #6366f1, #a855f7);
       --text-main: #e5e7eb;
       --text-soft: #9ca3af;
@@ -28,7 +27,6 @@
       --card-bg: #f9fafb;
       --border: rgba(148, 163, 184, 0.7);
       --accent: #6366f1;
-      --accent-soft: rgba(99, 102, 241, 0.16);
       --user-bubble: linear-gradient(135deg, #6366f1, #8b5cf6);
       --text-main: #111827;
       --text-soft: #6b7280;
@@ -213,14 +211,14 @@
     .bubble {
       padding: 9px 12px;
       border-radius: 14px;
-      background: transparent; /* bot için default şeffaf */
+      background: transparent;
       color: var(--text-main);
       font-size: 14px;
       line-height: 1.35;
       white-space: pre-line;
     }
 
-    /* Sadece KULLANICI balonlu olsun */
+    /* sadece kullanıcı balonlu */
     .msg-row.user .bubble {
       background: var(--user-bubble);
       color: #f9fafb;
@@ -229,7 +227,7 @@
       border-bottom-right-radius: 4px;
     }
 
-    /* Bot mesajı: düz metin, balonsuz */
+    /* bot düz metin, balon yok */
     .msg-row.bot .bubble {
       padding: 0;
       border: none;
