@@ -2,31 +2,26 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <title>MØR•AI v5.60 ULTIMATE</title>
+  <title>MØR•AI v5.55 ULTIMATE</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
     :root {
-      --bg-light: #ffffff;
-      --text-light: #111111;
-      --bot-light: #e5e7eb;
-      --border-light: #d1d5db;
-
-      --bg-dark: #0f172a;
-      --text-dark: #f1f5f9;
-      --bot-dark: #1e293b;
-      --border-dark: #334155;
-
-      --user-bubble: linear-gradient(135deg,#6366f1,#a855f7);
+      --bg: #ffffff;
+      --text: #111111;
+      --bubble-user: #7c3aed;
+      --bubble-bot: #e5e7eb;
       --accent: #7c3aed;
+      --border: #d1d5db;
     }
 
-    * { box-sizing:border-box; }
+    * { box-sizing: border-box; }
 
     body {
       margin:0;
       height:100vh;
-      font-family:system-ui,sans-serif;
+      background:var(--bg);
+      font-family:system-ui, sans-serif;
       display:flex;
       justify-content:center;
       align-items:center;
@@ -40,42 +35,51 @@
       flex-direction:column;
       border-left:1px solid var(--border);
       border-right:1px solid var(--border);
+      background:white;
     }
 
     header {
-      padding:12px;
-      font-size:16px;
-      font-weight:bold;
       display:flex;
       justify-content:space-between;
       align-items:center;
+      padding:12px;
       border-bottom:1px solid var(--border);
+      position:relative;
     }
 
-    #settingsBtn { cursor:pointer; font-size:18px; }
+    #settingsBtn {
+      font-size:18px;
+      cursor:pointer;
+      padding:6px;
+    }
 
     #settingsMenu {
-      display:none;
       position:absolute;
       right:10px;
-      top:50px;
-      background:var(--bg);
+      top:45px;
+      background:white;
       border:1px solid var(--border);
-      border-radius:12px;
+      border-radius:8px;
       padding:10px;
-      width:220px;
+      width:180px;
+      display:none;
       z-index:10;
     }
 
-    #settingsMenu label { display:block; margin:6px 0; font-size:14px; }
+    #settingsMenu h3 {
+      font-size:12px;
+      margin-bottom:6px;
+      color:#444;
+    }
+
+    #settingsMenu label {
+      font-size:13px;
+      display:block;
+      margin:4px 0;
+    }
 
     .chat {
-      flex:1;
-      overflow-y:auto;
-      padding:12px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
+      flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;
     }
 
     .msg {
@@ -83,25 +87,36 @@
       padding:8px 12px;
       border-radius:12px;
       font-size:14px;
+      line-height:1.3;
       white-space:pre-line;
     }
 
     .user {
       margin-left:auto;
-      background:var(--user-bubble);
+      background:var(--bubble-user);
       color:white;
     }
+
     .bot {
-      background:var(--bot);
+      background:var(--bubble-bot);
       color:var(--text);
       border:1px solid var(--border);
     }
 
     .inputBar {
-      padding:10px;
       display:flex;
       gap:6px;
+      padding:10px;
       border-top:1px solid var(--border);
+    }
+
+    #fileInput { display:none; }
+
+    #fileBtn, #sendBtn, #micBtn {
+      width:38px;height:38px;border-radius:50%;
+      border:none;cursor:pointer;
+      background:var(--accent);color:white;
+      font-size:16px;
     }
 
     #input {
@@ -109,22 +124,13 @@
       padding:10px;
       border:1px solid var(--border);
       border-radius:20px;
-    }
-
-    #fileInput { display:none; }
-    #sendBtn, #fileBtn, #micBtn {
-      width:38px;height:38px;
-      border-radius:50%;
-      border:none;
-      background:var(--accent);
-      color:white;
-      cursor:pointer;
-      font-size:18px;
+      font-size:14px;
     }
 
     .typing {
       font-size:12px;
       opacity:0.7;
+      padding-left:4px;
     }
   </style>
 </head>
@@ -132,12 +138,36 @@
 <body>
   <div class="app">
     <header>
-      <span>MØR•AI v5.60</span>
-      <span id="settingsBtn">⚙️</span>
+      <b>MØR•AI v5.55</b>
+      <div id="settingsBtn">⚙️</div>
 
+      <!-- AYAR MENÜSÜ -->
       <div id="settingsMenu">
-        <label><input type="checkbox" id="darkMode"/> Karanlık modu aç</label>
-        <label><input type="checkbox" id="historySave" checked/> Sohbet kaydet</label>
+        <h3>Ayarlar</h3>
+
+        <label>
+          <input type="checkbox" id="soundOn" checked />
+          Sesli cevap
+        </label>
+
+        <label>
+          Ses seçimi:
+          <select id="voiceSelect">
+            <option value="female">Kadın</option>
+            <option value="male">Erkek</option>
+          </select>
+        </label>
+
+        <label>
+          <input type="checkbox" id="darkMode" />
+          Karanlık tema
+        </label>
+
+        <label>
+          <input type="checkbox" id="historySave" checked />
+          Geçmişi kaydet
+        </label>
+
       </div>
     </header>
 
@@ -153,47 +183,51 @@
   </div>
 
 <script>
-let currentPersonality="street"; // Varsayılan: Reis modu
 
-function setTheme(){
-  const dark=darkMode.checked;
-  document.documentElement.style.setProperty("--bg",dark?"var(--bg-dark)":"var(--bg-light)");
-  document.documentElement.style.setProperty("--text",dark?"var(--text-dark)":"var(--text-light)");
-  document.documentElement.style.setProperty("--bot",dark?"var(--bot-dark)":"var(--bot-light)");
-  document.documentElement.style.setProperty("--border",dark?"var(--border-dark)":"var(--border-light)");
-}
-darkMode.onchange=setTheme;
-setTheme();
-
-settingsBtn.onclick=()=>{
-  settingsMenu.style.display=settingsMenu.style.display==="block"?"none":"block";
-};
-
+  // ===============================
+// ZAMAN FORMATI
+// ===============================
 function time(){
   const d=new Date();
-  return `${d.getHours().toString().padStart(2,"0")}:${d.getMinutes().toString().padStart(2,"0")}`;
+  return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
 }
 
+// ===============================
+// MESAJ EKLE
+// ===============================
 function addMsg({text="",user=false,img=null}){
-  const el=document.createElement("div");
-  el.className="msg "+(user?"user":"bot");
+  const row=document.createElement("div");
+  row.className="msg "+(user?"user":"bot");
+
   if(img){
-    const i=document.createElement("img");
-    i.src=img;
-    i.style.maxWidth="220px";
-    i.style.borderRadius="10px";
-    i.style.display="block";
-    i.style.marginBottom="5px";
-    el.appendChild(i);
+    const image=document.createElement("img");
+    image.src=img;
+    image.style.maxWidth="220px";
+    image.style.borderRadius="12px";
+    image.style.display="block";
+    image.style.marginBottom="4px";
+    row.appendChild(image);
   }
-  el.appendChild(document.createTextNode(text));
-  chat.appendChild(el);
+
+  if(text) row.appendChild(document.createTextNode(text));
+
+  const meta=document.createElement("div");
+  meta.style.fontSize="10px";
+  meta.style.opacity="0.5";
+  meta.style.marginTop="3px";
+  meta.textContent=time();
+  row.appendChild(meta);
+
+  chat.appendChild(row);
   chat.scrollTop=chat.scrollHeight;
 }
 
-function botTyping(s){
+// ===============================
+// YAZIYOR ANİMASYONU
+// ===============================
+function botTyping(show){
   let t=document.getElementById("typing");
-  if(s){
+  if(show){
     if(!t){
       t=document.createElement("div");
       t.id="typing";
@@ -201,12 +235,18 @@ function botTyping(s){
       t.textContent="MØR•AI yazıyor…";
       chat.appendChild(t);
     }
-  } else{ if(t) t.remove(); }
+  }else{
+    if(t) t.remove();
+  }
+  chat.scrollTop=chat.scrollHeight;
 }
 
+// ===============================
+// ÖZEL KOMUTLAR
+// ===============================
 function commands(msg){
   if(msg==="/yardım"){
-    addMsg({text:"Komutlar:\n/yardım\n/temizle\n/versiyon",user:false});
+    addMsg({text:"Komutlar:\n/yardım\n/temizle\n/versiyon\nSesli cevap için ⚙️ menüsünü kullan!",user:false});
     return true;
   }
   if(msg==="/temizle"){
@@ -214,102 +254,222 @@ function commands(msg){
     welcome();
     return true;
   }
-  if(msg==="/versyon"){
-    addMsg({text:"MØR•AI v5.60 ULTIMATE 🔥",user:false});
+  if(msg==="/versiyon"){
+    addMsg({text:"MØR•AI v5.55 — TURBO 🔥",user:false});
     return true;
   }
   return false;
 }
 
-function detectImage(m){
-  m=m.toLowerCase();
-  if(m.includes("resim")||m.includes("foto")||m.includes("görsel")){
-    let t=m.replace("bana","").replace("resim","").replace("foto","").replace("görsel","").trim();
-    return t||"manzara";
+// ===============================
+// TON ALGILAMA (Reis modu)
+// ===============================
+function getTone(msg){
+  msg=msg.toLowerCase();
+  if(msg.includes("reis")||msg.includes("kral")||msg.includes("aga")) return "street";
+  if(msg.includes("allah")||msg.includes("dua")||msg.includes("kalp")) return "spiritual";
+  if(msg.includes("neden")||msg.includes("nedir")||msg.includes("kimdir")) return "serious";
+  return "normal";
+}
+
+  // ===============================
+// SESLİ CEVAP — GOOGLE TTS
+// ===============================
+const googleVoices = {
+  female: "tr-TR-Standard-A",
+  male: "tr-TR-Standard-B"
+};
+
+function speak(text){
+  if(!soundOn.checked) return; // Ses kapalıysa konuşma
+  const voice = voiceSelect.value;
+
+  const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=AIzaSyA1rMY_FAKE_API_KEY`;
+  
+  // NOT: Gerçek API key'i sonra ekleyeceğiz!
+  // Şimdilik bot sessizce çalışacak.
+
+  console.log("Konuşma hazırlanıyor:", text);
+}
+
+// ===============================
+// GÖRSEL ARAMA
+// ===============================
+function detectImage(msg){
+  const low = msg.toLowerCase();
+  if(
+    low.includes("resim") ||
+    low.includes("foto") ||
+    low.includes("görsel")
+  ){
+    let t = low
+      .replace("bana","")
+      .replace("resmi","")
+      .replace("resim","")
+      .replace("foto","")
+      .replace("fotoğraf","")
+      .replace("görsel","")
+      .trim();
+    return t || "manzara";
   }
   return null;
 }
 
-function showImage(t){
-  addMsg({text:`"${t}" görseli:`,user:false});
-  addMsg({img:`https://source.unsplash.com/400x300/?${encodeURIComponent(t)}`,user:false});
+function showImage(topic){
+  addMsg({
+    text:`"${topic}" için görsel 📷`,
+    img:`https://source.unsplash.com/400x300/?${encodeURIComponent(topic)}`,
+    user:false
+  });
 }
 
-async function wiki(q){
-  q=q.toLowerCase().replace(" nedir","").replace(" kimdir","").replace("?","").trim();
+// ===============================
+// SESLE KONUŞMA (MIC)
+// ===============================
+let recognition;
+try{
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.lang = "tr-TR";
+}catch(e){
+  console.warn("Sesli tanıma desteklenmiyor");
+}
+
+micBtn.onclick = ()=>{
+  if(!recognition){
+    addMsg({text:"Tarayıcı ses desteği yok reis ❌",user:false});
+    return;
+  }
+  addMsg({text:"Dinliyorum reis 👂",user:false});
+  recognition.start();
+};
+
+if(recognition){
+  recognition.onresult = (e)=>{
+    const text = e.results[0][0].transcript;
+    addMsg({text,user:true});
+    botAnswer(text);
+  };
+}
+
+  // ===============================
+// BİLGİ KAYNAĞI — WIKIPEDIA
+// ===============================
+async function wiki(query){
+  query = query
+    .toLowerCase()
+    .replace(" nedir","")
+    .replace(" kimdir","")
+    .replace("?","")
+    .trim();
+
+  const url = "https://tr.wikipedia.org/api/rest_v1/page/summary/"
+            + encodeURIComponent(query);
+
   try{
-    const r=await fetch("https://tr.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(q));
-    if(!r.ok) return null;
-    const d=await r.json();
-    return d.extract||null;
-  }catch{return null;}
+    const res = await fetch(url);
+    if(!res.ok) return null;
+    const data = await res.json();
+    if(!data.extract) return null;
+
+    return data.extract + "\n\nKaynak: Vikipedi";
+  }catch{
+    return null;
+  }
 }
 
+// ===============================
+// BOT CEVAP MOTORU
+// ===============================
 async function botAnswer(msg){
   if(commands(msg)) return;
 
-  const img=detectImage(msg);
+  const tone = getTone(msg);
+  const img = detectImage(msg);
+
+  // Görsel istenmişse
   if(img){
     botTyping(true);
-    await new Promise(r=>setTimeout(r,600));
+    await new Promise(r => setTimeout(r,600));
     botTyping(false);
     showImage(img);
     return;
   }
 
+  addMsg({text:(tone==="street"?"Bakıyorum reis…":"Araştırıyorum…"),user:false});
+
   botTyping(true);
-  const info=await wiki(msg);
+  const info = await wiki(msg);
   botTyping(false);
 
   if(info){
-    let txt;
-    switch(currentPersonality){
-      case "street": txt=`Reis şöyle diyim 👇\n${info}`; break;
-      case "spiritual": txt=`🕊 Manevi bilgi:\n${info}`; break;
-      case "scientific": txt=`📚 Kaynaklı bilgi:\n${info}`; break;
-      default: txt=info;
-    }
-    addMsg({text:txt,user:false});
+    addMsg({text:info,user:false});
+    speak(info);
   } else {
-    addMsg({text:"Kaynak bulamadım reis 😅",user:false});
+    const fallback = (tone==="street" ?
+      "Reis bu konuda sağlam kaynak bulamadım 😅" :
+      "Bununla ilgili bir bilgi bulamadım. Soruyu biraz daha açabilirsin.");
+    addMsg({text:fallback,user:false});
+    speak(fallback);
   }
 }
 
-sendBtn.onclick=send;
-input.onkeydown=e=>{if(e.key==="Enter") send();}
+// ===============================
+// KULLANICI MESAJ GÖNDERME
+// ===============================
+sendBtn.onclick = send;
+input.onkeydown = e=>{ if(e.key==="Enter") send(); };
+
 function send(){
-  const v=input.value.trim();
-  if(!v) return;
-  addMsg({text:v,user:true});
+  const text = input.value.trim();
+  if(!text) return;
   input.value="";
-  botAnswer(v);
+  addMsg({text,user:true});
+  botAnswer(text);
 }
 
-fileBtn.onclick=()=>fileInput.click();
-fileInput.onchange=()=>{
-  const file=fileInput.files[0];
-  if(!file)return;
-  const u=URL.createObjectURL(file);
-  addMsg({img:u,user:true});
-  setTimeout(()=>addMsg({text:"Fotoğraf geldi reis 📷",user:false}),400);
+// ===============================
+// FOTOĞRAF YÜKLEME
+// ===============================
+fileBtn.onclick = ()=>fileInput.click();
+
+fileInput.onchange = ()=>{
+  const file = fileInput.files[0];
+  if(!file) return;
+  const url = URL.createObjectURL(file);
+  addMsg({img:url,user:true});
+  setTimeout(()=>addMsg({text:"Foto geldi reis 📷",user:false}),400);
 };
 
+// ===============================
+// AYAR MENÜSÜ
+// ===============================
+settingsBtn.onclick = ()=>{
+  settingsMenu.style.display =
+    settingsMenu.style.display==="block" ? "none" : "block";
+};
+
+// ===============================
+// BAŞLANGIÇ MESAJI
+// ===============================
 function welcome(){
-  addMsg({text:
+  addMsg({
+    text:
 `Selam reis 👑
-Ben **MØR•AI v5.60**
+Ben **MØR•AI v5.55 TURBO**
 
-✔ Karanlık/Açık tema
-✔ Reis modu aktif
-✔ Görsel iste: "aslan resmi"
-✔ Wikipedia'dan bilgi
+✔ Türkçe doğal ses
+✔ Fotoğraf yolla
+✔ Görsel iste: "aslan resmi gönder"
+✔ Wikipedia’dan bilgi
+✔ /yardım /temizle /versiyon
 
-Komut: /yardım /temizle /versyon
-
-🔥 Hazırsan başlayalım!`
-  ,user:false});
+Hazırsan başlayalım 💜`,
+    user:false
+  });
 }
 welcome();
+
 </script>
 </body>
 </html>
