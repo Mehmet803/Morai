@@ -2,28 +2,28 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <title>MØR•AI – sade sürüm</title>
+  <title>MØR•AI v3</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
     :root {
-      --bg: #0b0f19;
-      --bg2: #111827;
+      --bg: #020617;
+      --bg2: #0b1120;
       --accent: #8b5cf6;
       --user-bubble: linear-gradient(135deg,#6366f1,#a855f7);
       --text-main: #e5e7eb;
       --text-soft: #9ca3af;
-      --border: rgba(148,163,184,0.25);
+      --border: rgba(148,163,184,0.28);
     }
 
     * { box-sizing:border-box; margin:0; padding:0; }
 
     body {
-      background: radial-gradient(circle at top,#1f2937,#020617);
       height:100vh;
       display:flex;
       align-items:center;
       justify-content:center;
+      background: radial-gradient(circle at top,#1e293b,var(--bg));
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color:var(--text-main);
     }
@@ -42,9 +42,11 @@
       box-shadow:0 24px 60px rgba(15,23,42,0.8);
     }
 
+    /* HEADER */
+
     .header {
       padding:10px 16px;
-      background:#020617dd;
+      background:#020617f2;
       border-bottom:1px solid var(--border);
       display:flex;
       align-items:center;
@@ -98,14 +100,16 @@
       text-align:center;
     }
 
+    /* CHAT AREA */
+
     .chat {
       flex:1;
-      padding:12px 10px;
+      padding:10px 10px 12px;
       overflow-y:auto;
       display:flex;
       flex-direction:column;
       gap:8px;
-      background:radial-gradient(circle at top,rgba(148,163,184,0.2),transparent 60%);
+      background:radial-gradient(circle at top,rgba(148,163,184,0.18),transparent 60%);
     }
 
     .chat::-webkit-scrollbar { width:6px; }
@@ -122,7 +126,7 @@
     }
 
     .msg-row.user { align-self:flex-end; }
-    .msg-row.bot { align-self:flex-start; }
+    .msg-row.bot  { align-self:flex-start; }
 
     @keyframes fadein {
       from { opacity:0; transform:translateY(4px); }
@@ -180,6 +184,8 @@
       from { opacity:.4; }
       to   { opacity:1; }
     }
+
+    /* INPUT BAR */
 
     .input-bar {
       padding:8px 10px 10px;
@@ -256,7 +262,7 @@
       <span class="online">çevrimiçi</span>
     </header>
 
-    <div class="motto">Ben MØR•AI: Sallamadan konuşurum. (Kaynak: Wikipedia + görsel arama)</div>
+    <div class="motto">Ben MØR•AI: Sallamadan konuşurum. (Wikipedia + görsel, uydurma yok.)</div>
 
     <main class="chat" id="chat"></main>
 
@@ -269,11 +275,11 @@
   </div>
 
   <script>
-    const chatEl   = document.getElementById("chat");
-    const inputEl  = document.getElementById("input");
-    const sendBtn  = document.getElementById("sendBtn");
-    const fileBtn  = document.getElementById("fileBtn");
-    const fileInput= document.getElementById("fileInput");
+    const chatEl    = document.getElementById("chat");
+    const inputEl   = document.getElementById("input");
+    const sendBtn   = document.getElementById("sendBtn");
+    const fileBtn   = document.getElementById("fileBtn");
+    const fileInput = document.getElementById("fileInput");
 
     function nowTime() {
       const d = new Date();
@@ -282,7 +288,7 @@
     }
 
     function addMessage({ text = "", isUser = false, imageUrl = null }) {
-      const row   = document.createElement("div");
+      const row = document.createElement("div");
       row.className = "msg-row " + (isUser ? "user" : "bot");
 
       const bubble = document.createElement("div");
@@ -325,6 +331,83 @@
       chatEl.scrollTop = chatEl.scrollHeight;
     }
 
+    // TON ALGILAMA
+    function detectTone(text) {
+      const lower = text.toLowerCase();
+
+      const firmWords = [
+        "olmuyo","olmuyor","çalışmıyo","çalışmıyor","calismiyo","calismiyor",
+        "sinir","delir","hata","bug","yanlış","yanlis","bozuk","saçma","sacma"
+      ];
+      if (firmWords.some(w => lower.includes(w))) return "firm";
+
+      const streetWords = [
+        "reis","kanka","aga","ağa","kardes","kardeş","bro","abi","abii",
+        "dayı","dayi","oğlum","oglum","kral"
+      ];
+      if (streetWords.some(w => lower.includes(w))) return "street";
+
+      const spiritualWords = [
+        "allah","iman","kalp","gönül","gonul","dua","teslimiyet","sabır","sabir",
+        "namaz","rab","ahiret","tevbe","tefekkür","tefekkur"
+      ];
+      if (spiritualWords.some(w => lower.includes(w))) return "spiritual";
+
+      const seriousWords = [
+        "nedir","kimdir","tarih","tarihi","kaynak","bilgi",
+        "açıkla","acikla","detay","tanım","tanim","özeti","ozeti","özet","ozet","analiz"
+      ];
+      if (seriousWords.some(w => lower.includes(w))) return "serious";
+
+      return "balanced";
+    }
+
+    function makeSearchMessage(tone) {
+      switch (tone) {
+        case "street":
+          return "Bakıyorum reis, sana düzgün bir şey bulmaya çalışıyorum…";
+        case "firm":
+          return "Tamam, bakıyorum. Ne var ne yok net bir özet çıkaracağım.";
+        case "spiritual":
+          return "Bu konuyu kaynaklardan tarıyorum; hem bilgi hem anlam tarafı düzgün olsun istiyorum…";
+        case "serious":
+          return "Sorunu Vikipedi’de arıyorum, sana kısa ve güvenilir bir özet getirmeye çalışıyorum…";
+        default:
+          return "Bakıyorum reis, Vikipedi’de bir şey bulabilecek miyim…";
+      }
+    }
+
+    function makeNotFoundMessage(tone) {
+      switch (tone) {
+        case "street":
+          return "Reis bu konuda doğru düzgün kaynak bulamadım. Sallamak istemiyorum. Soruyu biraz değiştirelim mi? 😅";
+        case "firm":
+          return "Buna dair güvenilir bir şey bulamadım. Rastgele bir şey yazıp seni yanlış yönlendirmek istemem.";
+        case "spiritual":
+          return "Bu başlıkta net bir kaynak bulamadım. Uydurup kalbini karıştırmak istemem; biraz daha açabilirsen beraber bakarız inşallah. 🌿";
+        case "serious":
+          return "Bu konuda güvenilir bir özet bulamadım. Uydurmak istemiyorum; istersen daha spesifik veya farklı bir ifade deneyebilirsin.";
+        default:
+          return "Bu konuda anlamlı bir kaynak bulamadım reis. Uydurmak istemiyorum.\nSoruyu biraz daha farklı veya ayrıntılı sorabilirsin.";
+      }
+    }
+
+    function wrapWikiAnswer(tone, wikiText) {
+      switch (tone) {
+        case "street":
+          return "Reis, sana şöyle bir özet buldum:\n\n" + wikiText;
+        case "firm":
+          return "Bulabildiğim güvenilir özet şöyle:\n\n" + wikiText;
+        case "spiritual":
+          return "Kaynaklarda bu konu kısaca şöyle anlatılıyor:\n\n" + wikiText;
+        case "serious":
+          return "İlgili kaynaklardan derlenmiş kısa bir özet:\n\n" + wikiText;
+        default:
+          return wikiText;
+      }
+    }
+
+    // GÖRSEL İSTEK ALGILAMA
     function detectImageTopic(text) {
       const lower = text.toLowerCase();
       const hasImageWord =
@@ -339,14 +422,14 @@
       if (!hasImageWord) return null;
 
       const cleaned = lower
-        .replace("bana", "")
-        .replace("resmi", "")
-        .replace("resim", "")
-        .replace("fotoğrafını", "")
-        .replace("fotoğraf", "")
-        .replace("fotograf", "")
-        .replace("görselini", "")
-        .replace("görsel", "")
+        .replace("bana","")
+        .replace("resmi","")
+        .replace("resim","")
+        .replace("fotoğrafını","")
+        .replace("fotoğraf","")
+        .replace("fotograf","")
+        .replace("görselini","")
+        .replace("görsel","")
         .trim();
 
       return cleaned || "nature";
@@ -386,44 +469,52 @@
       }
     }
 
-    function searchImage(topic) {
+    function searchImage(topic, tone) {
       const url =
         "https://images.weserv.nl/?url=source.unsplash.com/600x400/?" +
         encodeURIComponent(topic);
 
+      let msg;
+      if (tone === "street") {
+        msg = `"${topic}" için bir görsel gösteriyorum reis 📷 (kaynak: Unsplash)`;
+      } else {
+        msg = `"${topic}" için bir görsel gösteriyorum 📷 (kaynak: Unsplash)`;
+      }
+
       addMessage({
-        text: `"${topic}" için bir görsel gösteriyorum 📷 (kaynak: Unsplash)`,
+        text: msg,
         isUser: false,
         imageUrl: url,
       });
     }
 
     async function handleBotReply(userText) {
+      const tone = detectTone(userText);
+
+      // önce görsel isteğine bakalım
       const topic = detectImageTopic(userText);
       if (topic) {
         showTyping(true);
         await new Promise(r => setTimeout(r, 600));
         showTyping(false);
-        searchImage(topic);
+        searchImage(topic, tone);
         return;
       }
 
-      showTyping(true);
-      addMessage({
-        text: "Bakıyorum reis, Vikipedi'de bir şey bulabilecek miyim…",
-        isUser: false,
-      });
+      // metin bilgisi
+      const searchMsg = makeSearchMessage(tone);
+      addMessage({ text: searchMsg, isUser: false });
 
+      showTyping(true);
       const wikiText = await fetchWikiSummary(userText);
       showTyping(false);
 
       if (wikiText) {
-        addMessage({ text: wikiText, isUser: false });
+        const wrapped = wrapWikiAnswer(tone, wikiText);
+        addMessage({ text: wrapped, isUser: false });
       } else {
         addMessage({
-          text:
-            "Bu konuda güvenilir bir özet bulamadım reis. Uydurmak istemiyorum.\n" +
-            "Soruyu biraz daha açık veya farklı sorabilirsin.",
+          text: makeNotFoundMessage(tone),
           isUser: false,
         });
       }
@@ -456,18 +547,20 @@
       if (!file) return;
       const url = URL.createObjectURL(file);
 
+      // Senin fotoğrafın (kullanıcı)
       addMessage({
         imageUrl: url,
         isUser: true,
         text: "",
       });
 
+      // Bot cevabı (sadece düz metin)
       setTimeout(() => {
         addMessage({
-          text: "Fotoğrafını gördüm reis 📷 İstersen biraz da ne olduğunu anlat.",
+          text: "Fotoğrafını gördüm reis 📷 İçindeki hikâyeyi merak ettim doğrusu.",
           isUser: false,
         });
-      }, 400);
+      }, 500);
 
       setTimeout(() => URL.revokeObjectURL(url), 15000);
     });
@@ -480,7 +573,8 @@ Ben MØR•AI.
 
 • Wikipedia'dan Türkçe özet bulmaya çalışırım
 • "bana kedi resmi gönder" dersen görsel de gösteririm
-• Uydurma yok, bilmediğimde açıkça söylerim.`,
+• Fotoğraf yüklersen sadece görüntülerim, analiz yapmam
+• Uydurma yok; bilmediğimde açıkça söylerim.`,
       isUser: false,
     });
   </script>
