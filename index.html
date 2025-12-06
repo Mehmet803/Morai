@@ -1,598 +1,573 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8" />
-    <title>MORai v2.1</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <title>MØR•AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <style>
-        :root {
-            --bg: #e7ebff;
-            --bg-gradient: radial-gradient(circle at top, #f5e9ff 0, #f4f4f7 35%, #e4e7ff 100%);
-            --card-bg: #ffffff;
-            --card-border: rgba(148, 163, 184, 0.45);
-            --text-main: #111827;
-            --text-soft: #6b7280;
-            --accent: #4f46e5;
-            --bubble-user: linear-gradient(135deg, #4f46e5, #7c3aed);
-            --bubble-bot: #e5e7eb;
-            --header-bg: linear-gradient(135deg, #5b21ff, #9333ea);
-            --shadow: 0 20px 50px rgba(15, 23, 42, 0.22);
-        }
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-grad: radial-gradient(circle at top, #1f2937 0, #020617 55%, #020617 100%);
+      --card-bg: #020617;
+      --border: rgba(148, 163, 184, 0.4);
+      --accent: #8b5cf6;
+      --user-bubble: linear-gradient(135deg, #6366f1, #a855f7);
+      --text-main: #e5e7eb;
+      --text-soft: #9ca3af;
+      --input-bg: rgba(15, 23, 42, 0.85);
+      --header-bg: radial-gradient(circle at top left, #1d283a, #020617 65%);
+      --hint-bg: rgba(15, 23, 42, 0.9);
+      --panel-bg: rgba(15, 23, 42, 0.95);
+    }
 
-        body.dark {
-            --bg: #020617;
-            --bg-gradient: radial-gradient(circle at top, #0f172a 0, #020617 40%, #020617 100%);
-            --card-bg: #020617;
-            --card-border: rgba(51, 65, 85, 0.9);
-            --text-main: #e5e7eb;
-            --text-soft: #9ca3af;
-            --accent: #a855f7;
-            --bubble-user: linear-gradient(135deg, #6366f1, #a855f7);
-            --bubble-bot: #111827;
-            --header-bg: linear-gradient(135deg, #1d2671, #5c1b7c);
-            --shadow: 0 20px 50px rgba(15, 23, 42, 0.9);
-        }
+    body.light {
+      --bg: #e5e7eb;
+      --bg-grad: radial-gradient(circle at top, #f3f4f6 0, #e5e7eb 40%, #d1d5db 100%);
+      --card-bg: #f9fafb;
+      --border: rgba(148, 163, 184, 0.7);
+      --accent: #6366f1;
+      --user-bubble: linear-gradient(135deg, #6366f1, #8b5cf6);
+      --text-main: #111827;
+      --text-soft: #6b7280;
+      --input-bg: #ffffff;
+      --header-bg: linear-gradient(135deg, #6366f1, #8b5cf6);
+      --hint-bg: #e5e7eb;
+      --panel-bg: #f3f4f6;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: var(--bg-gradient);
-            color: var(--text-main);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+    body {
+      background: var(--bg-grad);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      color: var(--text-main);
+    }
 
-        .app {
-            width: 100%;
-            max-width: 620px;
-            height: 100vh;
-            max-height: 820px;
-            background: var(--card-bg);
-            border-radius: 22px;
-            border: 1px solid var(--card-border);
-            box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
+    .app {
+      width: 100%;
+      max-width: 540px;
+      height: 100vh;
+      max-height: 820px;
+      background: var(--card-bg);
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.75);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
-        .header {
-            padding: 12px 16px;
-            background: var(--header-bg);
-            color: #f9fafb;
-        }
+    .header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--header-bg);
+    }
 
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-        .logo-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+    .logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, #f9fafb, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 15px;
+      color: #0f172a;
+    }
 
-        .logo-circle {
-            width: 30px;
-            height: 30px;
-            border-radius: 999px;
-            background: radial-gradient(circle at 30% 30%, #f9fafb, #a855f7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 14px;
-        }
+    .titles h1 {
+      font-size: 16px;
+      letter-spacing: 0.14em;
+    }
 
-        .header-titles h1 {
-            font-size: 18px;
-            letter-spacing: 0.08em;
-        }
+    .titles span {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
 
-        .header-titles small {
-            font-size: 11px;
-            opacity: 0.9;
-        }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-        .status-pill {
-            font-size: 11px;
-            padding: 3px 8px;
-            border-radius: 999px;
-            background: rgba(15, 23, 42, 0.35);
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
+    .pill {
+      font-size: 11px;
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 999px;
+      padding: 4px 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: #e5e7eb;
+    }
 
-        .status-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 999px;
-            background: #4ade80;
-        }
+    body.light .pill {
+      background: rgba(15, 23, 42, 0.12);
+      color: #111827;
+    }
 
-        .header-hint {
-            margin-top: 6px;
-            font-size: 11px;
-            opacity: 0.9;
-        }
+    .pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+    }
 
-        .header-hint span {
-            background: rgba(15, 23, 42, 0.3);
-            padding: 2px 8px;
-            border-radius: 999px;
-            margin-right: 4px;
-        }
+    .theme-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.85);
+      color: #e5e7eb;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+    }
 
-        .chat-area {
-            flex: 1;
-            padding: 12px 10px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            background: radial-gradient(circle at top, rgba(148, 163, 184, 0.14), transparent 55%);
-        }
+    body.light .theme-btn {
+      background: #f9fafb;
+      color: #111827;
+      border-color: rgba(148, 163, 184, 0.7);
+    }
 
-        .chat-area::-webkit-scrollbar {
-            width: 6px;
-        }
-        .chat-area::-webkit-scrollbar-thumb {
-            background: rgba(148, 163, 184, 0.8);
-            border-radius: 999px;
-        }
+    .hint {
+      padding: 6px 14px 8px;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-soft);
+      background: var(--hint-bg);
+    }
 
-        .message {
-            max-width: 80%;
-            display: flex;
-            flex-direction: column;
-        }
+    .hint span {
+      background: rgba(55, 65, 81, 0.8);
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 10px;
+      margin-right: 4px;
+      color: #e5e7eb;
+    }
 
-        .message.user {
-            align-self: flex-end;
-            text-align: right;
-        }
+    body.light .hint span {
+      background: rgba(55, 65, 81, 0.1);
+      color: #111827;
+    }
 
-        .message.bot {
-            align-self: flex-start;
-        }
+    .chat {
+      flex: 1;
+      padding: 10px 10px 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: radial-gradient(circle at top, rgba(148, 163, 184, 0.18), transparent 55%);
+    }
 
-        .bubble {
-            padding: 9px 12px;
-            border-radius: 16px;
-            background: var(--bubble-bot);
-            white-space: pre-line;
-            font-size: 14px;
-        }
+    .chat::-webkit-scrollbar {
+      width: 6px;
+    }
+    .chat::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.8);
+      border-radius: 999px;
+    }
 
-        .message.user .bubble {
-            background: var(--bubble-user);
-            color: #f9fafb;
-            border-bottom-right-radius: 4px;
-        }
+    .msg-row {
+      display: flex;
+      flex-direction: column;
+      max-width: 78%;
+    }
 
-        .message.bot .bubble {
-            border-bottom-left-radius: 4px;
-        }
+    .msg-row.user {
+      align-self: flex-end;
+    }
 
-        .bubble img {
-            max-width: 260px;
-            max-height: 260px;
-            border-radius: 12px;
-            display: block;
-        }
+    .msg-row.bot {
+      align-self: flex-start;
+    }
 
-        .time {
-            font-size: 11px;
-            margin-top: 3px;
-            color: var(--text-soft);
-        }
+    .bubble {
+      padding: 9px 12px;
+      border-radius: 14px;
+      background: transparent;
+      color: var(--text-main);
+      font-size: 14px;
+      line-height: 1.35;
+      white-space: pre-line;
+    }
 
-        .input-area {
-            padding: 10px;
-            border-top: 1px solid #e5e7eb;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--card-bg);
-        }
+    /* sadece kullanıcı balonlu */
+    .msg-row.user .bubble {
+      background: var(--user-bubble);
+      color: #f9fafb;
+      border-radius: 16px;
+      border: none;
+      border-bottom-right-radius: 4px;
+    }
 
-        #yazi {
-            flex: 1;
-            padding: 9px 12px;
-            border-radius: 999px;
-            border: 1px solid #d1d5db;
-            font-size: 14px;
-            outline: none;
-        }
+    /* bot düz metin, balon yok */
+    .msg-row.bot .bubble {
+      padding: 0;
+      border: none;
+      border-radius: 0;
+    }
 
-        .btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 999px;
-            border: none;
-            cursor: pointer;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    .bubble img {
+      display: block;
+      max-width: 260px;
+      max-height: 260px;
+      border-radius: 12px;
+      object-fit: cover;
+    }
 
-        #fileBtn, #micBtn {
-            background: #e5e7eb;
-        }
+    .meta {
+      font-size: 10px;
+      color: var(--text-soft);
+      margin-top: 3px;
+    }
 
-        #gonderBtn {
-            background: var(--accent);
-            color: #f9fafb;
-        }
+    .meta.right {
+      text-align: right;
+    }
 
-        @media (max-width: 480px) {
-            .app {
-                border-radius: 0;
-                max-height: 100vh;
-            }
-        }
-    </style>
+    .input-bar {
+      padding: 8px 10px 10px;
+      border-top: 1px solid var(--border);
+      background: var(--panel-bg);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.8);
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+    }
+
+    body.light .icon-btn {
+      background: #ffffff;
+      color: #111827;
+      border-color: rgba(148, 163, 184, 0.7);
+    }
+
+    #input {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: var(--input-bg);
+      color: var(--text-main);
+      padding: 8px 11px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    #input::placeholder {
+      color: rgba(148, 163, 184, 0.9);
+    }
+
+    body.light #input {
+      border-color: rgba(148, 163, 184, 0.7);
+    }
+
+    #sendBtn {
+      width: 40px;
+      height: 34px;
+      border-radius: 999px;
+      border: none;
+      background: var(--accent);
+      color: #f9fafb;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+    }
+
+    @media (max-width: 480px) {
+      .app {
+        max-height: 100vh;
+        border-radius: 0;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<div class="app">
-    <div class="header">
-        <div class="header-top">
-            <div class="logo-group">
-                <div class="logo-circle">M</div>
-                <div class="header-titles">
-                    <h1>MORai</h1>
-                    <small>metin + resim + ses + Vikipedi (uydurma yok)</small>
-                </div>
-            </div>
-            <div class="status-pill">
-                <span class="status-dot"></span> aktif
-            </div>
+  <div class="app">
+    <header class="header">
+      <div class="brand">
+        <div class="logo">Ø</div>
+        <div class="titles">
+          <h1>MØR•AI</h1>
+          <span>TR bot · wiki + görsel</span>
         </div>
-        <p class="header-hint">
-            <span>örnek</span> “Boz ayı nedir?” · “Bana bir kedi resmi göster” · “bana morai kodlarını gönder”
-        </p>
+      </div>
+      <div class="header-right">
+        <div class="pill">
+          <span class="pill-dot"></span>
+          çevrimiçi
+        </div>
+        <button class="theme-btn" id="themeBtn">🌙</button>
+      </div>
+    </header>
+
+    <div class="hint">
+      <span>örnek</span>
+      “Boz ayı nedir?” · “Bana kedi resmi gönder” · “İstanbul”
     </div>
 
-    <div class="chat-area" id="chat">
-        <div class="message bot">
-            <div class="bubble">
+    <div class="chat" id="chat">
+      <div class="msg-row bot">
+        <div class="bubble">
 Hoş geldin 💜
-Ben tarayıcının içinde çalışan küçük bir MORai'yim.
+Ben tarayıcı içinde çalışan küçük bir MØR•AI’yim.
 
-• YAZ → sorularını Vikipedi’den arayıp özetlemeye çalışırım
-• 🎙️ → konuş, ben metne dönüştüreyim (tarayıcın destekliyorsa)
-• 📷 → bilgisayarından bir fotoğraf yükleyebilirsin (sadece gösteririm)
-• “bana morai kodlarını gönder” dersen, bu sayfanın kod özetini atarım
+• Metin yaz → Vikipedi’den özet bulmaya çalışırım  
+• “bana kedi resmi gönder” → internetten görsel çekerim  
+• 📷 tuşuyla → kendi fotoğrafını gönderebilirsin (sadece gösteririm)
 
-Bilmediğim konuda “bulamadım, uydurmak istemiyorum” derim; sallama yok.
-            </div>
-            <div class="time">--:--</div>
+Bilmediğim konuda “bulamadım, sallamıyorum” derim; uydurma yok.
         </div>
+        <div class="meta">şimdi</div>
+      </div>
     </div>
 
-    <div class="input-area">
-        <button id="fileBtn" class="btn">📷</button>
-        <input type="file" id="fileInput" accept="image/*" style="display:none" />
-        <button id="micBtn" class="btn">🎙️</button>
-        <input type="text" id="yazi" placeholder="Mesaj yaz..." />
-        <button id="gonderBtn" class="btn">➡️</button>
+    <div class="input-bar">
+      <input type="file" id="fileInput" accept="image/*" style="display:none" />
+      <button class="icon-btn" id="fileBtn">📷</button>
+      <input id="input" type="text" placeholder="Bir şey yaz..." />
+      <button id="sendBtn">➡️</button>
     </div>
-</div>
+  </div>
 
-<script>
-    const chat      = document.getElementById("chat");
-    const input     = document.getElementById("yazi");
-    const sendBtn   = document.getElementById("gonderBtn");
-    const fileBtn   = document.getElementById("fileBtn");
+  <script>
+    const chatEl = document.getElementById("chat");
+    const inputEl = document.getElementById("input");
+    const sendBtn = document.getElementById("sendBtn");
+    const fileBtn = document.getElementById("fileBtn");
     const fileInput = document.getElementById("fileInput");
-    const micBtn    = document.getElementById("micBtn");
+    const themeBtn = document.getElementById("themeBtn");
 
-    const moraiCodeSummary = `
-Bu MORai v2.1 sayfasının özeti:
+    // Tema switch
+    let dark = true;
+    themeBtn.addEventListener("click", () => {
+      dark = !dark;
+      document.body.classList.toggle("light", !dark);
+      themeBtn.textContent = dark ? "🌙" : "☀️";
+    });
 
-• Tek dosya: index.html
-• Özellikler:
-  - Metinle sohbet (kullanıcı mesajı + bot cevabı)
-  - Vikipedi'den (tr.wikipedia.org) bilgi çekip özetleme
-  - Fotoğraf yükleme (bilgisayardan seçilen resim balon içinde gösteriliyor)
-  - Sesle yazma (Web Speech API, tarayıcı destekliyorsa)
-  - Basit, modern arayüz
-
-• JS:
-  - sendText(): Kullanıcı metnini sohbete ekler, sonra botReply() çağırır
-  - botReply():
-      1) "bana morai kodlarını gönder" → bu açıklamayı geri yollar
-      2) "bana ... resmi göster / resmi gönder" → Unsplash'ten rastgele görsel URL'i oluşturur
-      3) Duygu/hâl cümlelerinde (yorgun, moral bozuk vb.) hazır şefkatli cevaplar verir
-      4) Diğer sorular için:
-         • Vikipedi'de arama yapar (search API + summary)
-         • Sonuç bulursa özet + "Kaynak: Vikipedi – başlık"
-         • Bulamazsa "bulamadım, uydurmak istemiyorum" diye dürüstçe söyler
-  - Fotoğraf yükleme:
-      • File input'tan seçilen resmi URL.createObjectURL ile gösterir
-  - Sesle yazma:
-      • SpeechRecognition / webkitSpeechRecognition (tr-TR) ile konuşmayı metne çevirir.
-`;
-
-    function saatAl() {
-        const now = new Date();
-        const h = String(now.getHours()).padStart(2, "0");
-        const m = String(now.getMinutes()).padStart(2, "0");
-        return `${h}:${m}`;
+    function nowTime() {
+      const d = new Date();
+      return String(d.getHours()).padStart(2, "0") + ":" +
+             String(d.getMinutes()).padStart(2, "0");
     }
 
-    function createMessage(who) {
-        const wrapper = document.createElement("div");
-        wrapper.className = `message ${who}`;
+    function addMessage({ text = "", isUser = false, imageUrl = null }) {
+      const row = document.createElement("div");
+      row.className = "msg-row " + (isUser ? "user" : "bot");
 
-        const bubble = document.createElement("div");
-        bubble.className = "bubble";
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
 
-        const time = document.createElement("div");
-        time.className = "time";
-        time.textContent = saatAl();
-
-        wrapper.appendChild(bubble);
-        wrapper.appendChild(time);
-        chat.appendChild(wrapper);
-        chat.scrollTop = chat.scrollHeight;
-
-        return { wrapper, bubble, time };
-    }
-
-    function addTextMessage(text, who) {
-        const { bubble } = createMessage(who);
-        bubble.textContent = text;
-    }
-
-    function addImageMessage(url, who) {
-        const { bubble } = createMessage(who);
+      if (imageUrl) {
         const img = document.createElement("img");
-        img.src = url;
-        img.alt = "Gönderilen resim";
-        bubble.innerHTML = "";
+        img.src = imageUrl;
+        img.alt = "görsel";
         bubble.appendChild(img);
-    }
+      }
 
-    function normalizeForWiki(text) {
-        let t = text.toLowerCase().trim();
-        t = t.replace(/\?/g, " ");
-        t = t.replace(/nedir/g, " ");
-        t = t.replace(/kimdir/g, " ");
-        t = t.replace(/hakkında bilgi ver/g, " ");
-        t = t.replace(/hakkında ne biliyorsun/g, " ");
-        t = t.replace(/bana /g, " ");
-        t = t.replace(/\s+/g, " ").trim();
-        return t || text.trim();
-    }
-
-    async function fetchWikipediaSummary(query) {
-        const norm = normalizeForWiki(query);
-        const searchUrl =
-            "https://tr.wikipedia.org/w/api.php" +
-            "?action=query&list=search&utf8=&format=json&origin=*" +
-            "&srsearch=" + encodeURIComponent(norm);
-
-        try {
-            const searchRes = await fetch(searchUrl);
-            if (!searchRes.ok) return null;
-            const searchData = await searchRes.json();
-            const results = searchData?.query?.search;
-            if (!results || results.length === 0) return null;
-
-            const title = results[0].title;
-            const summaryUrl =
-                "https://tr.wikipedia.org/api/rest_v1/page/summary/" +
-                encodeURIComponent(title);
-
-            const summaryRes = await fetch(summaryUrl);
-            if (!summaryRes.ok) return null;
-            const summaryData = await summaryRes.json();
-            if (!summaryData.extract) return null;
-
-            let text = summaryData.extract;
-            if (text.length > 900) {
-                text = text.slice(0, 880) + "...";
-            }
-            text += `\n\n(Kaynak: Vikipedi – ${title})`;
-            return text;
-        } catch (e) {
-            console.error("Vikipedi hatası:", e);
-            return null;
+      if (text) {
+        if (imageUrl) {
+          const p = document.createElement("div");
+          p.style.marginTop = "6px";
+          p.textContent = text;
+          bubble.appendChild(p);
+        } else {
+          bubble.textContent = text;
         }
-    }
+      }
 
-    function emotionalReply(lower) {
-        if (lower.includes("yorgun") || lower.includes("bitkin") || lower.includes("tükenmiş")) {
-            return "Yorgun hissettiğini söylemen önemli 🌿 Belki biraz tempo düşürmek, su içmek ve kendine karşı daha yumuşak olmak iyi gelebilir. İstersen seni yoran şeyi konuşabiliriz.";
-        }
-        if (lower.includes("moralim bozuk") || lower.includes("üzgün") || lower.includes("canım sıkkın")) {
-            return "Moralinin bozuk olması çok insani 💜 İstersen seni sıkan şeyi parça parça anlat, ben yargısız bir kulak gibi dinleyebilirim.";
-        }
-        if (lower.includes("nasılsın")) {
-            return "Ben dijitalim, yorulmam ama senin nasıl hissettiğin önemli. Bugün kendini 0–10 arasında kaç hissediyorsun?";
-        }
-        if (lower.includes("teşekkür") || lower.includes("sağ ol")) {
-            return "Rica ederim, ne demek 💜 Küçük de olsa yanında hissettirebiliyorsam ne mutlu bana.";
-        }
-        return null;
-    }
+      const meta = document.createElement("div");
+      meta.className = "meta" + (isUser ? " right" : "");
+      meta.textContent = nowTime();
 
-    function isRequestForCode(lower) {
-        return (
-            lower.includes("morai kodlarını gönder") ||
-            lower.includes("morai kodlar") ||
-            lower.includes("morai kod")
-        );
+      row.appendChild(bubble);
+      row.appendChild(meta);
+      chatEl.appendChild(row);
+      chatEl.scrollTop = chatEl.scrollHeight;
     }
 
     function detectImageTopic(text) {
-        const lower = text.toLowerCase();
-        const match = lower.match(/bana (.+?) (resmi|resim|fotoğraf|fotograf|göster)/i);
-        if (match && match[1]) return match[1].trim();
+      const lower = text.toLowerCase();
+      const hasImageWord =
+        lower.includes("resim") ||
+        lower.includes("resmi") ||
+        lower.includes("foto") ||
+        lower.includes("fotoğraf") ||
+        lower.includes("fotograf") ||
+        lower.includes("görsel") ||
+        lower.includes("gorsel");
 
-        const match2 = lower.match(/(.+?) (resmi|resim|fotoğraf|fotograf)/i);
-        if (match2 && match2[1]) return match2[1].trim();
+      if (!hasImageWord) return null;
 
-        if (lower.includes("resim") || lower.includes("fotoğraf") || lower.includes("fotograf")) {
-            return text;
+      const cleaned = lower
+        .replace("bana", "")
+        .replace("resmi", "")
+        .replace("resim", "")
+        .replace("fotoğrafını", "")
+        .replace("fotoğraf", "")
+        .replace("fotograf", "")
+        .replace("görselini", "")
+        .replace("görsel", "")
+        .trim();
+
+      return cleaned || "nature";
+    }
+
+    function normalizeWikiQuery(text) {
+      let t = text.toLowerCase();
+      t = t.replace(/\?/g, " ");
+      t = t.replace(/ nedir/g, " ");
+      t = t.replace(/ kimdir/g, " ");
+      t = t.replace(/ hakkında bilgi ver/g, " ");
+      t = t.replace(/bana /g, " ");
+      t = t.replace(/\s+/g, " ").trim();
+      return t || text.trim();
+    }
+
+    async function fetchWikiSummary(query) {
+      const q = normalizeWikiQuery(query);
+      const url = "https://tr.wikipedia.org/api/rest_v1/page/summary/" +
+                  encodeURIComponent(q);
+
+      try {
+        const res = await fetch(url);
+        if (!res.ok) return null;
+        const data = await res.json();
+        if (!data.extract) return null;
+
+        let text = data.extract;
+        if (text.length > 900) {
+          text = text.slice(0, 880) + "...";
         }
+        text += "\n\nKaynak: Vikipedi";
+        return text;
+      } catch (e) {
+        console.error("Wiki hatası:", e);
         return null;
+      }
     }
 
-    const imageKeywordMap = [
-        { key: "boz ayı", query: "brown bear" },
-        { key: "ayı",     query: "bear" },
-        { key: "kedi",    query: "cat" },
-        { key: "köpek",   query: "dog" },
-        { key: "dağ",     query: "mountain" },
-        { key: "orman",   query: "forest" },
-        { key: "deniz",   query: "sea" },
-        { key: "göl",     query: "lake" },
-        { key: "çiçek",   query: "flower" }
-    ];
+    function searchImage(topic) {
+      const url =
+        "https://images.weserv.nl/?url=source.unsplash.com/600x400/?" +
+        encodeURIComponent(topic);
 
-    function getUnsplashQuery(topic) {
-        const lower = topic.toLowerCase();
-        for (const item of imageKeywordMap) {
-            if (lower.includes(item.key)) return item.query;
-        }
-        return topic;
+      addMessage({
+        text: `"${topic}" için bir görsel gösteriyorum 📷 (kaynak: Unsplash)`,
+        isUser: false,
+        imageUrl: url,
+      });
     }
 
-    async function botReply(text) {
-        const lower = text.toLowerCase();
+    async function handleBotReply(userText) {
+      const topic = detectImageTopic(userText);
+      if (topic) {
+        searchImage(topic);
+        return;
+      }
 
-        if (isRequestForCode(lower)) {
-            addTextMessage(
-                "Tamam, sana MORai kodlarının özetini gönderiyorum:\n\n" + moraiCodeSummary,
-                "bot"
-            );
-            return;
-        }
+      addMessage({
+        text: "Sorunu Vikipedi'de arıyorum, uygun bir özet bulmaya çalışıyorum…",
+        isUser: false,
+      });
 
-        const imageTopic = detectImageTopic(text);
-        if (imageTopic) {
-            const searchTerm = getUnsplashQuery(imageTopic);
-            const url = "https://source.unsplash.com/600x400/?" + encodeURIComponent(searchTerm);
-
-            addTextMessage(
-                `“${imageTopic}” için bir görsel gösteriyorum 📷\nBu görüntü Unsplash'ten rastgele seçilen bir fotoğraftır.`,
-                "bot"
-            );
-            addImageMessage(url, "bot");
-            return;
-        }
-
-        const emo = emotionalReply(lower);
-        if (emo) {
-            addTextMessage(emo, "bot");
-            return;
-        }
-
-        addTextMessage("Sorunu Vikipedi'de arıyorum, uygun bir özet bulmaya çalışıyorum…", "bot");
-        const wikiAnswer = await fetchWikipediaSummary(text);
-        if (wikiAnswer) {
-            addTextMessage(wikiAnswer, "bot");
-        } else {
-            addTextMessage(
-                "Bu konuda Vikipedi'de anlamlı bir sonuç bulamadım. Kafadan uydurmak istemiyorum.\n" +
-                "İstersen soruyu biraz daha net veya farklı bir şekilde sorabilirsin 💜",
-                "bot"
-            );
-        }
+      const wikiText = await fetchWikiSummary(userText);
+      if (wikiText) {
+        addMessage({ text: wikiText, isUser: false });
+      } else {
+        addMessage({
+          text:
+            "Bu konuda anlamlı bir kaynak bulamadım. Uydurmak istemiyorum 😇\n" +
+            "Soruyu biraz daha farklı veya ayrıntılı sorabilirsin.",
+          isUser: false,
+        });
+      }
     }
 
-    function sendText() {
-        const text = input.value.trim();
-        if (!text) return;
-        addTextMessage(text, "user");
-        input.value = "";
-        input.focus();
-        botReply(text);
+    function sendTextMessage() {
+      const text = inputEl.value.trim();
+      if (!text) return;
+      addMessage({ text, isUser: true });
+      inputEl.value = "";
+      inputEl.focus();
+      handleBotReply(text);
     }
+
+    sendBtn.addEventListener("click", sendTextMessage);
+    inputEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        sendTextMessage();
+      }
+    });
 
     fileBtn.addEventListener("click", () => {
-        fileInput.value = "";
-        fileInput.click();
+      fileInput.value = "";
+      fileInput.click();
     });
 
     fileInput.addEventListener("change", () => {
-        const file = fileInput.files[0];
-        if (!file) return;
+      const file = fileInput.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
 
-        const objectUrl = URL.createObjectURL(file);
-        addImageMessage(objectUrl, "user");
+      addMessage({
+        imageUrl: url,
+        isUser: true,
+        text: "",
+      });
 
-        setTimeout(() => {
-            addTextMessage(
-                "Fotoğrafını gördüm 📷 İstersen biraz da hikâyesini anlat.",
-                "bot"
-            );
-        }, 300);
-
-        setTimeout(() => URL.revokeObjectURL(objectUrl), 10000);
-    });
-
-    let recognition = null;
-    let listening = false;
-
-    if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
-        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-        recognition = new SR();
-        recognition.lang = "tr-TR";
-        recognition.interimResults = false;
-
-        recognition.addEventListener("result", (event) => {
-            const transcript = event.results[0][0].transcript;
-            if (input.value.trim() === "") {
-                input.value = transcript;
-            } else {
-                input.value += " " + transcript;
-            }
+      setTimeout(() => {
+        addMessage({
+          text: "Fotoğrafını gördüm 📷 İstersen biraz da hikâyesini anlat.",
+          isUser: false,
         });
+      }, 400);
 
-        recognition.addEventListener("end", () => {
-            listening = false;
-        });
-    } else {
-        micBtn.title = "Tarayıcın ses desteği vermiyor (Chrome önerilir)";
-    }
-
-    micBtn.addEventListener("click", () => {
-        if (!recognition) {
-            alert("Tarayıcın Web Speech API desteklemiyor. (Chrome / Edge deneyebilirsin.)");
-            return;
-        }
-
-        if (!listening) {
-            recognition.start();
-            listening = true;
-        } else {
-            recognition.stop();
-            listening = false;
-        }
+      setTimeout(() => URL.revokeObjectURL(url), 15000);
     });
-
-    sendBtn.addEventListener("click", sendText);
-    input.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            sendText();
-        }
-    });
-</script>
+  </script>
 </body>
 </html>
