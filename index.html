@@ -609,3 +609,366 @@
   </script>
 </body>
 </html>
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>MØR•AI v4.1</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      --bg: #020617;
+      --bg2: #0b1120;
+      --accent: #8b5cf6;
+      --user-bubble: linear-gradient(135deg,#6366f1,#a855f7);
+      --text-main: #e5e7eb;
+      --text-soft: #9ca3af;
+      --border: rgba(148,163,184,0.28);
+    }
+
+    * { box-sizing:border-box; margin:0; padding:0; }
+
+    body {
+      height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: radial-gradient(circle at top,#1e293b,var(--bg));
+      font-family: system-ui;
+      color:var(--text-main);
+    }
+
+    .app {
+      width:100%;
+      max-width:540px;
+      height:100vh;
+      background:var(--bg2);
+      border-radius:18px;
+      border:1px solid var(--border);
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+      box-shadow:0 0 40px rgba(0,0,0,0.6);
+    }
+
+    .header {
+      padding:10px 16px;
+      border-bottom:1px solid var(--border);
+      background:#0f172acc;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .brand { display:flex; align-items:center; gap:8px; }
+
+    .logo {
+      width:28px;height:28px;border-radius:50%;
+      background:var(--accent);
+      font-size:14px;font-weight:900;
+      display:flex;align-items:center;justify-content:center;
+      color:#fff;
+    }
+
+    .online {
+      padding:3px 10px;font-size:10px;
+      border-radius:999px;color:#4ade80;
+      border:1px solid #4ade8055
+    }
+
+    .motto{
+      text-align:center;padding:6px;
+      font-size:11px;color:var(--text-soft);
+      border-bottom:1px solid var(--border);
+    }
+
+    .chat {
+      flex:1; overflow-y:auto;
+      padding:10px;
+      display:flex;flex-direction:column;gap:10px;
+    }
+
+    .msg-row { max-width:78%; display:flex; flex-direction:column; }
+    .msg-row.user { align-self:flex-end; text-align:right; }
+    .msg-row.bot { align-self:flex-start; }
+
+    .bubble { white-space:pre-line; font-size:14px; }
+
+    .msg-row.user .bubble {
+      background:var(--user-bubble);color:white;
+      padding:8px 12px;border-radius:14px;
+      border-bottom-right-radius:4px;
+    }
+
+    .bubble img {
+      max-width:230px; border-radius:10px;
+      margin-bottom:5px;
+    }
+
+    .meta { font-size:10px;color:var(--text-soft);margin-top:3px; }
+
+    .input-bar{
+      padding:10px;
+      border-top:1px solid var(--border);
+      background:#0f172acc;
+      display:flex;gap:6px;align-items:center;
+    }
+
+    #input{
+      flex:1;border-radius:20px;
+      background:#020617;border:1px solid #4b5563;
+      padding:8px 10px;color:white;
+    }
+
+    #sendBtn, #fileBtn{
+      width:38px;height:34px;border-radius:50%;
+      border:none;cursor:pointer;
+      font-size:16px;background:var(--accent);color:white;
+    }
+
+    #fileInput{ display:none; }
+
+    .typing{
+      font-size:11px;color:var(--text-soft);
+      animation: blink 1s infinite;
+    }
+    @keyframes blink{50%{opacity:0.4}}
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <div class="header">
+      <div class="brand">
+        <div class="logo">Ø</div><b>MØR•AI</b>
+      </div>
+      <div class="online">çevrimiçi</div>
+    </div>
+
+    <div class="motto">
+      Ben MØR•AI: Sallamadan konuşurum 🤝
+    </div>
+
+    <div class="chat" id="chat"></div>
+
+    <div class="input-bar">
+      <input type="file" id="fileInput" accept="image/*"/>
+      <button id="fileBtn">📎</button>
+      <input id="input" placeholder="Bir şey yaz reis… (/yardım)"/>
+      <button id="sendBtn">➡️</button>
+    </div>
+  </div>
+
+<script>
+
+  // =========================
+//  ZAMAN
+// =========================
+function nowTime(){
+  const d=new Date();
+  return d.getHours().toString().padStart(2,"0")+":"+
+         d.getMinutes().toString().padStart(2,"0");
+}
+
+// =========================
+//  MESAJ EKLEME
+// =========================
+function addMsg({text="", user=false, img=null}){
+  const row=document.createElement("div");
+  row.className="msg-row "+(user?"user":"bot");
+  const bubble=document.createElement("div");
+  bubble.className="bubble";
+
+  if(img){
+    const image=document.createElement("img");
+    image.src=img;
+    bubble.appendChild(image);
+  }
+
+  if(text) bubble.appendChild(document.createTextNode(text));
+
+  const meta=document.createElement("div");
+  meta.className="meta";
+  meta.textContent=nowTime();
+
+  row.appendChild(bubble);
+  row.appendChild(meta);
+  chat.appendChild(row);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+// =========================
+//  YAZIYOR ANİMASYONU
+// =========================
+function typing(show){
+  let t=document.getElementById("typing");
+  if(show){
+    if(!t){
+      t=document.createElement("div");
+      t.id="typing";
+      t.className="typing";
+      t.textContent="MØR•AI yazıyor… ⚪⚪⚪";
+      chat.appendChild(t);
+    }
+  } else{
+    if(t) t.remove();
+  }
+  chat.scrollTop=chat.scrollHeight;
+}
+
+// =========================
+//  KOMUTLAR
+// =========================
+function handleCommands(txt){
+  if(txt==="/yardım"){
+    addMsg({text:"Komutlar:\n/yardım\n/temizle\n/versiyon\nGörsel: 'kedi resmi gönder', 'boz ayı resmi' ...",user:false});
+    return true;
+  }
+  if(txt==="/temizle"){
+    chat.innerHTML="";
+    welcome();
+    return true;
+  }
+  if(txt==="/versiyon"){
+    addMsg({text:"MØR•AI v4.1 — Stabil 👑",user:false});
+    return true;
+  }
+  return false;
+}
+
+// =========================
+//  TON ALGILAMA
+// =========================
+function tone(txt){
+  txt=txt.toLowerCase();
+
+  if(txt.includes("reis")||txt.includes("aga")||txt.includes("kral"))
+    return "street";
+
+  if(txt.includes("allah")||txt.includes("dua")||txt.includes("kalp"))
+    return "spiritual";
+
+  if(txt.includes("nedir")||txt.includes("kimdir")||txt.includes("bilgi"))
+    return "serious";
+
+  if(txt.includes("olm")||txt.includes("hata")||txt.includes("bozuk"))
+    return "firm";
+
+  return "normal";
+}
+
+// =========================
+//  GÖRSEL İSTEĞİ
+// =========================
+function detectImage(txt){
+  txt=txt.toLowerCase();
+  if(txt.includes("resim")||txt.includes("foto")||txt.includes("görsel")){
+    return txt.replace("resim","").replace("foto","").replace("görsel","")
+      .replace("bana","").trim() || "nature";
+  }
+  return null;
+}
+
+// =========================
+//  WİKİ ÖZETİ
+// =========================
+async function wiki(q){
+  q=q.toLowerCase().replace(" nedir","").replace("?","").trim();
+  const url="https://tr.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(q);
+
+  try{
+    const r=await fetch(url);
+    if(!r.ok) return null;
+    const d=await r.json();
+    if(!d.extract) return null;
+    return d.extract+"\n\nKaynak: Vikipedi";
+  }catch(e){
+    return null;
+  }
+}
+
+// =========================
+//  BOT CEVAP SİSTEMİ
+// =========================
+async function botAnswer(text){
+  if(handleCommands(text)) return;
+
+  const t=tone(text);
+  const imgTopic=detectImage(text);
+
+  if(imgTopic){
+    typing(true);
+    await new Promise(r=>setTimeout(r,500));
+    typing(false);
+
+    addMsg({
+      text:`"${imgTopic}" için bir görsel gösteriyorum 📷`,
+      img:"https://images.weserv.nl/?url=source.unsplash.com/600x400/?"+encodeURIComponent(imgTopic)
+    });
+    return;
+  }
+
+  addMsg({text:(t==="street"?"Bakıyorum reis…":"Bakıyorum…"), user:false});
+  typing(true);
+
+  const info=await wiki(text);
+  typing(false);
+
+  if(info) addMsg({text:info,user:false});
+  else addMsg({
+    text:(t==="street"?
+      "Reis kaynak bulamadım. Uydurmak istemiyorum 😅":
+      "Bununla ilgili bilgi bulamadım. Soruyu biraz daha açabilirsin."),
+    user:false
+  });
+}
+
+// =========================
+//  SOHBET BAŞLANGICI
+// =========================
+function welcome(){
+  addMsg({
+    user:false,
+    text:
+`Selam reis 💜
+Ben MØR•AI v4.1
+
+• Wikipedia'dan özet bulurum
+• Görsel getirebilirim ("kedi resmi gönder")
+• Foto yükleyebilirsin 📎
+• Komut: /yardım /temizle /versiyon`
+  });
+}
+welcome();
+
+// =========================
+//  BUTONLAR
+// =========================
+sendBtn.onclick=()=>{
+  const val=input.value.trim();
+  if(!val) return;
+  addMsg({text:val,user:true});
+  input.value="";
+  botAnswer(val);
+};
+
+input.onkeydown=e=>{
+  if(e.key==="Enter") sendBtn.click();
+};
+
+fileBtn.onclick=()=>fileInput.click();
+
+fileInput.onchange=()=>{
+  const f=fileInput.files[0];
+  if(!f) return;
+  const url=URL.createObjectURL(f);
+  addMsg({img:url,user:true});
+  setTimeout(()=>{
+    addMsg({text:"Fotoğrafını gördüm reis 📷",user:false});
+  },400);
+};
+</script>
+</body>
+</html>
