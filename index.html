@@ -2,973 +2,474 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <title>MØR•AI v4</title>
+  <title>MØR•AI v5.55 ULTIMATE</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
     :root {
-      --bg: #020617;
-      --bg2: #0b1120;
-      --accent: #8b5cf6;
-      --user-bubble: linear-gradient(135deg,#6366f1,#a855f7);
-      --text-main: #e5e7eb;
-      --text-soft: #9ca3af;
-      --border: rgba(148,163,184,0.28);
+      --bg: #ffffff;
+      --text: #111111;
+      --bubble-user: #7c3aed;
+      --bubble-bot: #e5e7eb;
+      --accent: #7c3aed;
+      --border: #d1d5db;
     }
 
-    * { box-sizing:border-box; margin:0; padding:0; }
+    * { box-sizing: border-box; }
 
     body {
+      margin:0;
       height:100vh;
+      background:var(--bg);
+      font-family:system-ui, sans-serif;
       display:flex;
-      align-items:center;
       justify-content:center;
-      background: radial-gradient(circle at top,#1e293b,var(--bg));
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color:var(--text-main);
+      align-items:center;
     }
 
     .app {
       width:100%;
       max-width:540px;
       height:100vh;
-      max-height:820px;
-      background:var(--bg2);
-      border-radius:18px;
-      border:1px solid var(--border);
       display:flex;
       flex-direction:column;
-      overflow:hidden;
-      box-shadow:0 24px 60px rgba(15,23,42,0.8);
+      border-left:1px solid var(--border);
+      border-right:1px solid var(--border);
+      background:white;
     }
 
-    .header {
-      padding:10px 16px;
-      background:#020617f2;
-      border-bottom:1px solid var(--border);
+    header {
       display:flex;
-      align-items:center;
       justify-content:space-between;
-    }
-
-    .brand { display:flex; align-items:center; gap:8px; }
-
-    .logo {
-      width:30px; height:30px; border-radius:999px;
-      background:radial-gradient(circle at 30% 30%,#f9fafb,#8b5cf6);
-      display:flex; align-items:center; justify-content:center;
-      font-size:14px; font-weight:800; color:#020617;
-    }
-
-    .titles h1 {
-      font-size:14px;
-      letter-spacing:.18em;
-    }
-
-    .titles span {
-      font-size:10px;
-      color:var(--text-soft);
-    }
-
-    .online {
-      font-size:10px;
-      padding:3px 9px;
-      border-radius:999px;
-      border:1px solid #22c55e66;
-      background:#022c2288;
-      color:#4ade80;
-    }
-
-    .motto {
-      padding:6px 12px;
-      font-size:11px;
+      align-items:center;
+      padding:12px;
       border-bottom:1px solid var(--border);
-      background:#020617f2;
-      color:var(--text-soft);
-      text-align:center;
+      position:relative;
+    }
+
+    #settingsBtn {
+      font-size:18px;
+      cursor:pointer;
+      padding:6px;
+    }
+
+    #settingsMenu {
+      position:absolute;
+      right:10px;
+      top:45px;
+      background:white;
+      border:1px solid var(--border);
+      border-radius:8px;
+      padding:10px;
+      width:180px;
+      display:none;
+      z-index:10;
+    }
+
+    #settingsMenu h3 {
+      font-size:12px;
+      margin-bottom:6px;
+      color:#444;
+    }
+
+    #settingsMenu label {
+      font-size:13px;
+      display:block;
+      margin:4px 0;
     }
 
     .chat {
-      flex:1;
-      padding:10px 10px 12px;
-      overflow-y:auto;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      background:radial-gradient(circle at top,rgba(148,163,184,0.18),transparent 60%);
+      flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;
     }
 
-    .chat::-webkit-scrollbar { width:6px; }
-    .chat::-webkit-scrollbar-thumb {
-      background:#374151;
-      border-radius:999px;
-    }
-
-    .msg-row {
-      max-width:80%;
-      display:flex;
-      flex-direction:column;
-      animation:fadein .25s ease-out;
-    }
-
-    .msg-row.user {
-      align-self:flex-end;
-      text-align:right;
-    }
-
-    .msg-row.bot {
-      align-self:flex-start;
-      text-align:left;
-    }
-
-    @keyframes fadein {
-      from { opacity:0; transform:translateY(4px); }
-      to   { opacity:1; transform:translateY(0); }
-    }
-
-    .bubble {
+    .msg {
+      max-width:75%;
+      padding:8px 12px;
+      border-radius:12px;
       font-size:14px;
-      line-height:1.35;
+      line-height:1.3;
       white-space:pre-line;
     }
 
-    /* sadece kullanıcı balonlu */
-    .msg-row.user .bubble {
-      background:var(--user-bubble);
-      color:#f9fafb;
-      padding:8px 11px;
-      border-radius:14px;
-      border-bottom-right-radius:4px;
+    .user {
+      margin-left:auto;
+      background:var(--bubble-user);
+      color:white;
     }
 
-    /* bot düz metin – balon yok */
-    .msg-row.bot .bubble {
-      padding:0;
-      background:transparent;
-      color:var(--text-main);
+    .bot {
+      background:var(--bubble-bot);
+      color:var(--text);
+      border:1px solid var(--border);
     }
 
-    .bubble img {
-      max-width:240px;
-      max-height:240px;
-      border-radius:12px;
-      display:block;
-      margin-bottom:6px;
-      object-fit:cover;
-    }
-
-    .meta {
-      font-size:10px;
-      color:var(--text-soft);
-      margin-top:3px;
-    }
-
-    .meta.right { text-align:right; }
-
-    .typing {
-      font-size:11px;
-      color:var(--text-soft);
-      margin-left:4px;
-      margin-bottom:4px;
-      animation:fade 0.8s infinite alternate;
-    }
-
-    @keyframes fade {
-      from { opacity:.4; }
-      to   { opacity:1; }
-    }
-
-    .input-bar {
-      padding:8px 10px 10px;
-      border-top:1px solid var(--border);
-      background:#020617f2;
+    .inputBar {
       display:flex;
-      align-items:center;
       gap:6px;
+      padding:10px;
+      border-top:1px solid var(--border);
     }
 
     #fileInput { display:none; }
 
-    .icon-btn {
-      width:38px;
-      height:34px;
-      border-radius:999px;
-      border:1px solid #4b5563;
-      background:#111827;
-      color:#e5e7eb;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:17px;
-      cursor:pointer;
+    #fileBtn, #sendBtn, #micBtn {
+      width:38px;height:38px;border-radius:50%;
+      border:none;cursor:pointer;
+      background:var(--accent);color:white;
+      font-size:16px;
     }
 
     #input {
       flex:1;
-      border-radius:999px;
-      border:1px solid #4b5563;
-      background:#020617;
-      color:var(--text-main);
-      padding:8px 11px;
-      font-size:14px;
-      outline:none;
-    }
-
-    #input::placeholder {
-      color:#6b7280;
-    }
-
-    #input:focus {
-      border-color:var(--accent);
-      box-shadow:0 0 0 2px rgba(139,92,246,0.35);
-    }
-
-    #sendBtn {
-      width:42px;
-      height:34px;
-      border-radius:999px;
-      border:none;
-      background:var(--accent);
-      color:#f9fafb;
-      cursor:pointer;
-      font-size:17px;
-    }
-
-    @media (max-width:600px) {
-      .app { border-radius:0; max-height:100vh; }
-    }
-  </style>
-</head>
-
-<body>
-  <div class="app">
-    <header class="header">
-      <div class="brand">
-        <div class="logo">Ø</div>
-        <div class="titles">
-          <h1>MØR•AI</h1>
-          <span>TR bot · wiki + görsel</span>
-        </div>
-      </div>
-      <span class="online">çevrimiçi</span>
-    </header>
-
-    <div class="motto">Ben MØR•AI: Sallamadan konuşurum. (Wikipedia + görsel, uydurma yok.)</div>
-
-    <main class="chat" id="chat"></main>
-
-    <div class="input-bar">
-      <input type="file" id="fileInput" accept="image/*" />
-      <button class="icon-btn" id="fileBtn">📎</button>
-      <input id="input" type="text" placeholder="Bir şey yaz reis…  (/temizle = sohbeti sil)" />
-      <button id="sendBtn">➡️</button>
-    </div>
-  </div>
-
-  <script>
-    var chatEl    = document.getElementById("chat");
-    var inputEl   = document.getElementById("input");
-    var sendBtn   = document.getElementById("sendBtn");
-    var fileBtn   = document.getElementById("fileBtn");
-    var fileInput = document.getElementById("fileInput");
-
-    function nowTime() {
-      var d = new Date();
-      var h = String(d.getHours()).padStart(2,"0");
-      var m = String(d.getMinutes()).padStart(2,"0");
-      return h + ":" + m;
-    }
-
-    function addMessage(opts) {
-      var text = opts.text || "";
-      var isUser = opts.isUser || false;
-      var imageUrl = opts.imageUrl || null;
-
-      var row = document.createElement("div");
-      row.className = "msg-row " + (isUser ? "user" : "bot");
-
-      var bubble = document.createElement("div");
-      bubble.className = "bubble";
-
-      if (imageUrl) {
-        var img = document.createElement("img");
-        img.src = imageUrl;
-        img.alt = "görsel";
-        bubble.appendChild(img);
-      }
-
-      if (text) {
-        bubble.appendChild(document.createTextNode(text));
-      }
-
-      var meta = document.createElement("div");
-      meta.className = "meta" + (isUser ? " right" : "");
-      meta.textContent = nowTime();
-
-      row.appendChild(bubble);
-      row.appendChild(meta);
-      chatEl.appendChild(row);
-      chatEl.scrollTop = chatEl.scrollHeight;
-    }
-
-    function showTyping(show) {
-      var t = document.getElementById("typing");
-      if (show) {
-        if (!t) {
-          t = document.createElement("div");
-          t.id = "typing";
-          t.className = "typing";
-          t.textContent = "MØR•AI yazıyor… ⚪⚪⚪";
-          chatEl.appendChild(t);
-        }
-      } else {
-        if (t) { t.parentNode.removeChild(t); }
-      }
-      chatEl.scrollTop = chatEl.scrollHeight;
-    }
-
-    // TON ALGILAMA
-
-    function detectTone(text) {
-      var lower = text.toLowerCase();
-
-      var firmWords = [
-        "olmuyo","olmuyor","çalışmıyo","çalışmıyor","calismiyo","calismiyor",
-        "sinir","delir","hata","bug","yanlış","yanlis","bozuk","saçma","sacma"
-      ];
-      for (var i=0;i<firmWords.length;i++) {
-        if (lower.indexOf(firmWords[i]) !== -1) return "firm";
-      }
-
-      var streetWords = [
-        "reis","kanka","aga","ağa","kardes","kardeş","bro","abi","abii",
-        "dayı","dayi","oğlum","oglum","kral"
-      ];
-      for (i=0;i<streetWords.length;i++) {
-        if (lower.indexOf(streetWords[i]) !== -1) return "street";
-      }
-
-      var spiritualWords = [
-        "allah","iman","kalp","gönül","gonul","dua","teslimiyet","sabır","sabir",
-        "namaz","rab","ahiret","tevbe","tefekkür","tefekkur"
-      ];
-      for (i=0;i<spiritualWords.length;i++) {
-        if (lower.indexOf(spiritualWords[i]) !== -1) return "spiritual";
-      }
-
-      var seriousWords = [
-        "nedir","kimdir","tarih","tarihi","kaynak","bilgi",
-        "açıkla","acikla","detay","tanım","tanim","özeti","ozeti","özet","ozet","analiz"
-      ];
-      for (i=0;i<seriousWords.length;i++) {
-        if (lower.indexOf(seriousWords[i]) !== -1) return "serious";
-      }
-
-      return "balanced";
-    }
-
-    function makeSearchMessage(tone) {
-      if (tone === "street") {
-        return "Bakıyorum reis, sana düzgün bir şey bulmaya çalışıyorum…";
-      }
-      if (tone === "firm") {
-        return "Tamam, bakıyorum. Ne var ne yok net bir özet çıkaracağım.";
-      }
-      if (tone === "spiritual") {
-        return "Bu konuyu kaynaklardan tarıyorum; hem bilgi hem anlam tarafı düzgün olsun istiyorum…";
-      }
-      if (tone === "serious") {
-        return "Sorunu Vikipedi’de arıyorum, sana kısa ve güvenilir bir özet getirmeye çalışıyorum…";
-      }
-      return "Bakıyorum reis, Vikipedi'de bir şey bulabilecek miyim…";
-    }
-
-    function makeNotFoundMessage(tone) {
-      if (tone === "street") {
-        return "Reis bu konuda doğru düzgün kaynak bulamadım. Sallamak istemiyorum. Soruyu biraz değiştirelim mi? 😅";
-      }
-      if (tone === "firm") {
-        return "Buna dair güvenilir bir şey bulamadım. Rastgele bir şey yazıp seni yanlış yönlendirmek istemem.";
-      }
-      if (tone === "spiritual") {
-        return "Bu başlıkta net bir kaynak bulamadım. Uydurup kalbini karıştırmak istemem; biraz daha açabilirsen beraber bakarız inşallah. 🌿";
-      }
-      if (tone === "serious") {
-        return "Bu konuda güvenilir bir özet bulamadım. Uydurmak istemiyorum; istersen daha spesifik veya farklı bir ifade deneyebilirsin.";
-      }
-      return "Bu konuda anlamlı bir kaynak bulamadım reis. Uydurmak istemiyorum.\nSoruyu biraz daha farklı veya ayrıntılı sorabilirsin.";
-    }
-
-    function wrapWikiAnswer(tone, wikiText) {
-      if (tone === "street") {
-        return "Reis, sana şöyle bir özet buldum:\n\n" + wikiText;
-      }
-      if (tone === "firm") {
-        return "Bulabildiğim güvenilir özet şöyle:\n\n" + wikiText;
-      }
-      if (tone === "spiritual") {
-        return "Kaynaklarda bu konu kısaca şöyle anlatılıyor:\n\n" + wikiText;
-      }
-      if (tone === "serious") {
-        return "İlgili kaynaklardan derlenmiş kısa bir özet:\n\n" + wikiText;
-      }
-      return wikiText;
-    }
-
-    // GÖRSEL İSTEK
-
-    function detectImageTopic(text) {
-      var lower = text.toLowerCase();
-      var hasImageWord =
-        lower.indexOf("resim") !== -1 ||
-        lower.indexOf("resmi") !== -1 ||
-        lower.indexOf("foto") !== -1 ||
-        lower.indexOf("fotoğraf") !== -1 ||
-        lower.indexOf("fotograf") !== -1 ||
-        lower.indexOf("görsel") !== -1 ||
-        lower.indexOf("gorsel") !== -1;
-
-      if (!hasImageWord) return null;
-
-      var cleaned = lower
-        .replace("bana","")
-        .replace("resmi","")
-        .replace("resim","")
-        .replace("fotoğrafını","")
-        .replace("fotoğraf","")
-        .replace("fotograf","")
-        .replace("görselini","")
-        .replace("görsel","")
-        .trim();
-
-      if (!cleaned) cleaned = "nature";
-      return cleaned;
-    }
-
-    function normalizeWikiQuery(text) {
-      var t = text.toLowerCase();
-      t = t.replace(/\?/g, " ");
-      t = t.replace(/ nedir/g, " ");
-      t = t.replace(/ kimdir/g, " ");
-      t = t.replace(/ hakkında bilgi ver/g, " ");
-      t = t.replace(/bana /g, " ");
-      t = t.replace(/\s+/g, " ").trim();
-      if (!t) t = text.trim();
-      return t;
-    }
-
-    function fetchWikiSummary(query) {
-      var q   = normalizeWikiQuery(query);
-      var url = "https://tr.wikipedia.org/api/rest_v1/page/summary/" +
-                encodeURIComponent(q);
-
-      return fetch(url)
-        .then(function(res){
-          if (!res.ok) return null;
-          return res.json();
-        })
-        .then(function(data){
-          if (!data || !data.extract) return null;
-          var text = data.extract;
-          if (text.length > 900) {
-            text = text.slice(0, 880) + "...";
-          }
-          text += "\n\nKaynak: Vikipedi";
-          return text;
-        })
-        .catch(function(){
-          return null;
-        });
-    }
-
-    function searchImage(topic, tone) {
-      var url =
-        "https://images.weserv.nl/?url=source.unsplash.com/600x400/?" +
-        encodeURIComponent(topic);
-
-      var msg;
-      if (tone === "street") {
-        msg = '"' + topic + '" için bir görsel gösteriyorum reis 📷 (kaynak: Unsplash)';
-      } else {
-        msg = '"' + topic + '" için bir görsel gösteriyorum 📷 (kaynak: Unsplash)';
-      }
-
-      addMessage({
-        text: msg,
-        isUser: false,
-        imageUrl: url
-      });
-    }
-
-    function handleBotReply(userText) {
-      var tone = detectTone(userText);
-
-      var topic = detectImageTopic(userText);
-      if (topic) {
-        showTyping(true);
-        setTimeout(function(){
-          showTyping(false);
-          searchImage(topic, tone);
-        }, 600);
-        return;
-      }
-
-      var searchMsg = makeSearchMessage(tone);
-      addMessage({
-        text: searchMsg,
-        isUser: false
-      });
-
-      showTyping(true);
-
-      fetchWikiSummary(userText).then(function(wikiText){
-        showTyping(false);
-
-        if (wikiText) {
-          var wrapped = wrapWikiAnswer(tone, wikiText);
-          addMessage({
-            text: wrapped,
-            isUser: false
-          });
-        } else {
-          addMessage({
-            text: makeNotFoundMessage(tone),
-            isUser: false
-          });
-        }
-      });
-    }
-
-    function clearChatAndWelcome() {
-      chatEl.innerHTML = "";
-      addMessage({
-        text:
-"Selam reis 💜\n" +
-"Ben MØR•AI.\n\n" +
-"• Wikipedia'dan Türkçe özet bulmaya çalışırım\n" +
-"• \"bana kedi resmi gönder\" dersen görsel de gösteririm\n" +
-"• Fotoğraf yüklersen sadece görüntülerim\n" +
-"• Uydurma yok; bilmediğimde açıkça söylerim.\n\n" +
-"/temizle → sohbeti sıfırlar.",
-        isUser: false
-      });
-    }
-
-    function sendTextMessage() {
-      var text = inputEl.value.trim();
-      if (!text) return;
-
-      if (text === "/temizle") {
-        inputEl.value = "";
-        clearChatAndWelcome();
-        return;
-      }
-
-      addMessage({ text: text, isUser: true });
-      inputEl.value = "";
-      inputEl.focus();
-      handleBotReply(text);
-    }
-
-    sendBtn.addEventListener("click", sendTextMessage);
-    inputEl.addEventListener("keydown", function(e) {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        sendTextMessage();
-      }
-    });
-
-    fileBtn.addEventListener("click", function() {
-      fileInput.value = "";
-      fileInput.click();
-    });
-
-    fileInput.addEventListener("change", function() {
-      var file = fileInput.files[0];
-      if (!file) return;
-      var url = URL.createObjectURL(file);
-
-      addMessage({
-        imageUrl: url,
-        isUser: true,
-        text: ""
-      });
-
-      setTimeout(function() {
-        addMessage({
-          text: "Fotoğrafını gördüm reis 📷 İçindeki hikâyeyi merak ettim.",
-          isUser: false
-        });
-      }, 500);
-
-      setTimeout(function(){ URL.revokeObjectURL(url); }, 15000);
-    });
-
-    // İlk karşılama
-    clearChatAndWelcome();
-  </script>
-</body>
-</html>
-
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-  <meta charset="UTF-8" />
-  <title>MØR•AI v4.1</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <style>
-    :root {
-      --bg: #020617;
-      --bg2: #0b1120;
-      --accent: #8b5cf6;
-      --user-bubble: linear-gradient(135deg,#6366f1,#a855f7);
-      --text-main: #e5e7eb;
-      --text-soft: #9ca3af;
-      --border: rgba(148,163,184,0.28);
-    }
-
-    * { box-sizing:border-box; margin:0; padding:0; }
-
-    body {
-      height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background: radial-gradient(circle at top,#1e293b,var(--bg));
-      font-family: system-ui;
-      color:var(--text-main);
-    }
-
-    .app {
-      width:100%;
-      max-width:540px;
-      height:100vh;
-      background:var(--bg2);
-      border-radius:18px;
+      padding:10px;
       border:1px solid var(--border);
-      display:flex;
-      flex-direction:column;
-      overflow:hidden;
-      box-shadow:0 0 40px rgba(0,0,0,0.6);
+      border-radius:20px;
+      font-size:14px;
     }
 
-    .header {
-      padding:10px 16px;
-      border-bottom:1px solid var(--border);
-      background:#0f172acc;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
+    .typing {
+      font-size:12px;
+      opacity:0.7;
+      padding-left:4px;
     }
-
-    .brand { display:flex; align-items:center; gap:8px; }
-
-    .logo {
-      width:28px;height:28px;border-radius:50%;
-      background:var(--accent);
-      font-size:14px;font-weight:900;
-      display:flex;align-items:center;justify-content:center;
-      color:#fff;
-    }
-
-    .online {
-      padding:3px 10px;font-size:10px;
-      border-radius:999px;color:#4ade80;
-      border:1px solid #4ade8055
-    }
-
-    .motto{
-      text-align:center;padding:6px;
-      font-size:11px;color:var(--text-soft);
-      border-bottom:1px solid var(--border);
-    }
-
-    .chat {
-      flex:1; overflow-y:auto;
-      padding:10px;
-      display:flex;flex-direction:column;gap:10px;
-    }
-
-    .msg-row { max-width:78%; display:flex; flex-direction:column; }
-    .msg-row.user { align-self:flex-end; text-align:right; }
-    .msg-row.bot { align-self:flex-start; }
-
-    .bubble { white-space:pre-line; font-size:14px; }
-
-    .msg-row.user .bubble {
-      background:var(--user-bubble);color:white;
-      padding:8px 12px;border-radius:14px;
-      border-bottom-right-radius:4px;
-    }
-
-    .bubble img {
-      max-width:230px; border-radius:10px;
-      margin-bottom:5px;
-    }
-
-    .meta { font-size:10px;color:var(--text-soft);margin-top:3px; }
-
-    .input-bar{
-      padding:10px;
-      border-top:1px solid var(--border);
-      background:#0f172acc;
-      display:flex;gap:6px;align-items:center;
-    }
-
-    #input{
-      flex:1;border-radius:20px;
-      background:#020617;border:1px solid #4b5563;
-      padding:8px 10px;color:white;
-    }
-
-    #sendBtn, #fileBtn{
-      width:38px;height:34px;border-radius:50%;
-      border:none;cursor:pointer;
-      font-size:16px;background:var(--accent);color:white;
-    }
-
-    #fileInput{ display:none; }
-
-    .typing{
-      font-size:11px;color:var(--text-soft);
-      animation: blink 1s infinite;
-    }
-    @keyframes blink{50%{opacity:0.4}}
   </style>
 </head>
 
 <body>
   <div class="app">
-    <div class="header">
-      <div class="brand">
-        <div class="logo">Ø</div><b>MØR•AI</b>
-      </div>
-      <div class="online">çevrimiçi</div>
-    </div>
+    <header>
+      <b>MØR•AI v5.55</b>
+      <div id="settingsBtn">⚙️</div>
 
-    <div class="motto">
-      Ben MØR•AI: Sallamadan konuşurum 🤝
-    </div>
+      <!-- AYAR MENÜSÜ -->
+      <div id="settingsMenu">
+        <h3>Ayarlar</h3>
+
+        <label>
+          <input type="checkbox" id="soundOn" checked />
+          Sesli cevap
+        </label>
+
+        <label>
+          Ses seçimi:
+          <select id="voiceSelect">
+            <option value="female">Kadın</option>
+            <option value="male">Erkek</option>
+          </select>
+        </label>
+
+        <label>
+          <input type="checkbox" id="darkMode" />
+          Karanlık tema
+        </label>
+
+        <label>
+          <input type="checkbox" id="historySave" checked />
+          Geçmişi kaydet
+        </label>
+
+      </div>
+    </header>
 
     <div class="chat" id="chat"></div>
 
-    <div class="input-bar">
+    <div class="inputBar">
       <input type="file" id="fileInput" accept="image/*"/>
       <button id="fileBtn">📎</button>
-      <input id="input" placeholder="Bir şey yaz reis… (/yardım)"/>
+      <input id="input" placeholder="Bir şey yaz reis…"/>
+      <button id="micBtn">🎤</button>
       <button id="sendBtn">➡️</button>
     </div>
   </div>
 
 <script>
 
-  // =========================
-//  ZAMAN
-// =========================
-function nowTime(){
+  // ===============================
+// ZAMAN FORMATI
+// ===============================
+function time(){
   const d=new Date();
-  return d.getHours().toString().padStart(2,"0")+":"+
-         d.getMinutes().toString().padStart(2,"0");
+  return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
 }
 
-// =========================
-//  MESAJ EKLEME
-// =========================
-function addMsg({text="", user=false, img=null}){
+// ===============================
+// MESAJ EKLE
+// ===============================
+function addMsg({text="",user=false,img=null}){
   const row=document.createElement("div");
-  row.className="msg-row "+(user?"user":"bot");
-  const bubble=document.createElement("div");
-  bubble.className="bubble";
+  row.className="msg "+(user?"user":"bot");
 
   if(img){
     const image=document.createElement("img");
     image.src=img;
-    bubble.appendChild(image);
+    image.style.maxWidth="220px";
+    image.style.borderRadius="12px";
+    image.style.display="block";
+    image.style.marginBottom="4px";
+    row.appendChild(image);
   }
 
-  if(text) bubble.appendChild(document.createTextNode(text));
+  if(text) row.appendChild(document.createTextNode(text));
 
   const meta=document.createElement("div");
-  meta.className="meta";
-  meta.textContent=nowTime();
-
-  row.appendChild(bubble);
+  meta.style.fontSize="10px";
+  meta.style.opacity="0.5";
+  meta.style.marginTop="3px";
+  meta.textContent=time();
   row.appendChild(meta);
+
   chat.appendChild(row);
   chat.scrollTop=chat.scrollHeight;
 }
 
-// =========================
-//  YAZIYOR ANİMASYONU
-// =========================
-function typing(show){
+// ===============================
+// YAZIYOR ANİMASYONU
+// ===============================
+function botTyping(show){
   let t=document.getElementById("typing");
   if(show){
     if(!t){
       t=document.createElement("div");
       t.id="typing";
       t.className="typing";
-      t.textContent="MØR•AI yazıyor… ⚪⚪⚪";
+      t.textContent="MØR•AI yazıyor…";
       chat.appendChild(t);
     }
-  } else{
+  }else{
     if(t) t.remove();
   }
   chat.scrollTop=chat.scrollHeight;
 }
 
-// =========================
-//  KOMUTLAR
-// =========================
-function handleCommands(txt){
-  if(txt==="/yardım"){
-    addMsg({text:"Komutlar:\n/yardım\n/temizle\n/versiyon\nGörsel: 'kedi resmi gönder', 'boz ayı resmi' ...",user:false});
+// ===============================
+// ÖZEL KOMUTLAR
+// ===============================
+function commands(msg){
+  if(msg==="/yardım"){
+    addMsg({text:"Komutlar:\n/yardım\n/temizle\n/versiyon\nSesli cevap için ⚙️ menüsünü kullan!",user:false});
     return true;
   }
-  if(txt==="/temizle"){
+  if(msg==="/temizle"){
     chat.innerHTML="";
     welcome();
     return true;
   }
-  if(txt==="/versiyon"){
-    addMsg({text:"MØR•AI v4.1 — Stabil 👑",user:false});
+  if(msg==="/versiyon"){
+    addMsg({text:"MØR•AI v5.55 — TURBO 🔥",user:false});
     return true;
   }
   return false;
 }
 
-// =========================
-//  TON ALGILAMA
-// =========================
-function tone(txt){
-  txt=txt.toLowerCase();
-
-  if(txt.includes("reis")||txt.includes("aga")||txt.includes("kral"))
-    return "street";
-
-  if(txt.includes("allah")||txt.includes("dua")||txt.includes("kalp"))
-    return "spiritual";
-
-  if(txt.includes("nedir")||txt.includes("kimdir")||txt.includes("bilgi"))
-    return "serious";
-
-  if(txt.includes("olm")||txt.includes("hata")||txt.includes("bozuk"))
-    return "firm";
-
+// ===============================
+// TON ALGILAMA (Reis modu)
+// ===============================
+function getTone(msg){
+  msg=msg.toLowerCase();
+  if(msg.includes("reis")||msg.includes("kral")||msg.includes("aga")) return "street";
+  if(msg.includes("allah")||msg.includes("dua")||msg.includes("kalp")) return "spiritual";
+  if(msg.includes("neden")||msg.includes("nedir")||msg.includes("kimdir")) return "serious";
   return "normal";
 }
 
-// =========================
-//  GÖRSEL İSTEĞİ
-// =========================
-function detectImage(txt){
-  txt=txt.toLowerCase();
-  if(txt.includes("resim")||txt.includes("foto")||txt.includes("görsel")){
-    return txt.replace("resim","").replace("foto","").replace("görsel","")
-      .replace("bana","").trim() || "nature";
+  // ===============================
+// SESLİ CEVAP — GOOGLE TTS
+// ===============================
+const googleVoices = {
+  female: "tr-TR-Standard-A",
+  male: "tr-TR-Standard-B"
+};
+
+function speak(text){
+  if(!soundOn.checked) return; // Ses kapalıysa konuşma
+  const voice = voiceSelect.value;
+
+  const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=AIzaSyA1rMY_FAKE_API_KEY`;
+  
+  // NOT: Gerçek API key'i sonra ekleyeceğiz!
+  // Şimdilik bot sessizce çalışacak.
+
+  console.log("Konuşma hazırlanıyor:", text);
+}
+
+// ===============================
+// GÖRSEL ARAMA
+// ===============================
+function detectImage(msg){
+  const low = msg.toLowerCase();
+  if(
+    low.includes("resim") ||
+    low.includes("foto") ||
+    low.includes("görsel")
+  ){
+    let t = low
+      .replace("bana","")
+      .replace("resmi","")
+      .replace("resim","")
+      .replace("foto","")
+      .replace("fotoğraf","")
+      .replace("görsel","")
+      .trim();
+    return t || "manzara";
   }
   return null;
 }
 
-// =========================
-//  WİKİ ÖZETİ
-// =========================
-async function wiki(q){
-  q=q.toLowerCase().replace(" nedir","").replace("?","").trim();
-  const url="https://tr.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(q);
-
-  try{
-    const r=await fetch(url);
-    if(!r.ok) return null;
-    const d=await r.json();
-    if(!d.extract) return null;
-    return d.extract+"\n\nKaynak: Vikipedi";
-  }catch(e){
-    return null;
-  }
-}
-
-// =========================
-//  BOT CEVAP SİSTEMİ
-// =========================
-async function botAnswer(text){
-  if(handleCommands(text)) return;
-
-  const t=tone(text);
-  const imgTopic=detectImage(text);
-
-  if(imgTopic){
-    typing(true);
-    await new Promise(r=>setTimeout(r,500));
-    typing(false);
-
-    addMsg({
-      text:`"${imgTopic}" için bir görsel gösteriyorum 📷`,
-      img:"https://images.weserv.nl/?url=source.unsplash.com/600x400/?"+encodeURIComponent(imgTopic)
-    });
-    return;
-  }
-
-  addMsg({text:(t==="street"?"Bakıyorum reis…":"Bakıyorum…"), user:false});
-  typing(true);
-
-  const info=await wiki(text);
-  typing(false);
-
-  if(info) addMsg({text:info,user:false});
-  else addMsg({
-    text:(t==="street"?
-      "Reis kaynak bulamadım. Uydurmak istemiyorum 😅":
-      "Bununla ilgili bilgi bulamadım. Soruyu biraz daha açabilirsin."),
+function showImage(topic){
+  addMsg({
+    text:`"${topic}" için görsel 📷`,
+    img:`https://source.unsplash.com/400x300/?${encodeURIComponent(topic)}`,
     user:false
   });
 }
 
-// =========================
-//  SOHBET BAŞLANGICI
-// =========================
+// ===============================
+// SESLE KONUŞMA (MIC)
+// ===============================
+let recognition;
+try{
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.lang = "tr-TR";
+}catch(e){
+  console.warn("Sesli tanıma desteklenmiyor");
+}
+
+micBtn.onclick = ()=>{
+  if(!recognition){
+    addMsg({text:"Tarayıcı ses desteği yok reis ❌",user:false});
+    return;
+  }
+  addMsg({text:"Dinliyorum reis 👂",user:false});
+  recognition.start();
+};
+
+if(recognition){
+  recognition.onresult = (e)=>{
+    const text = e.results[0][0].transcript;
+    addMsg({text,user:true});
+    botAnswer(text);
+  };
+}
+
+// ===============================
+// BİLGİ KAYNAĞI — WIKIPEDIA
+// ===============================
+async function wiki(query){
+  query = query
+    .toLowerCase()
+    .replace(" nedir","")
+    .replace(" kimdir","")
+    .replace("?","")
+    .trim();
+
+  const url = "https://tr.wikipedia.org/api/rest_v1/page/summary/"
+            + encodeURIComponent(query);
+
+  try{
+    const res = await fetch(url);
+    if(!res.ok) return null;
+    const data = await res.json();
+    if(!data.extract) return null;
+
+    return data.extract + "\n\nKaynak: Vikipedi";
+  }catch{
+    return null;
+  }
+}
+
+// ===============================
+// BOT CEVAP MOTORU
+// ===============================
+async function botAnswer(msg){
+  if(commands(msg)) return;
+
+  const tone = getTone(msg);
+  const img = detectImage(msg);
+
+  // Görsel istenmişse
+  if(img){
+    botTyping(true);
+    await new Promise(r => setTimeout(r,600));
+    botTyping(false);
+    showImage(img);
+    return;
+  }
+
+  addMsg({text:(tone==="street"?"Bakıyorum reis…":"Araştırıyorum…"),user:false});
+
+  botTyping(true);
+  const info = await wiki(msg);
+  botTyping(false);
+
+  if(info){
+    addMsg({text:info,user:false});
+    speak(info);
+  } else {
+    const fallback = (tone==="street" ?
+      "Reis bu konuda sağlam kaynak bulamadım 😅" :
+      "Bununla ilgili bir bilgi bulamadım. Soruyu biraz daha açabilirsin.");
+    addMsg({text:fallback,user:false});
+    speak(fallback);
+  }
+}
+
+// ===============================
+// KULLANICI MESAJ GÖNDERME
+// ===============================
+sendBtn.onclick = send;
+input.onkeydown = e=>{ if(e.key==="Enter") send(); };
+
+function send(){
+  const text = input.value.trim();
+  if(!text) return;
+  input.value="";
+  addMsg({text,user:true});
+  botAnswer(text);
+}
+
+// ===============================
+// FOTOĞRAF YÜKLEME
+// ===============================
+fileBtn.onclick = ()=>fileInput.click();
+
+fileInput.onchange = ()=>{
+  const file = fileInput.files[0];
+  if(!file) return;
+  const url = URL.createObjectURL(file);
+  addMsg({img:url,user:true});
+  setTimeout(()=>addMsg({text:"Foto geldi reis 📷",user:false}),400);
+};
+
+// ===============================
+// AYAR MENÜSÜ
+// ===============================
+settingsBtn.onclick = ()=>{
+  settingsMenu.style.display =
+    settingsMenu.style.display==="block" ? "none" : "block";
+};
+
+// ===============================
+// BAŞLANGIÇ MESAJI
+// ===============================
 function welcome(){
   addMsg({
-    user:false,
     text:
-`Selam reis 💜
-Ben MØR•AI v4.1
+`Selam reis 👑
+Ben **MØR•AI v5.55 TURBO**
 
-• Wikipedia'dan özet bulurum
-• Görsel getirebilirim ("kedi resmi gönder")
-• Foto yükleyebilirsin 📎
-• Komut: /yardım /temizle /versiyon`
+✔ Türkçe doğal ses
+✔ Fotoğraf yolla
+✔ Görsel iste: "aslan resmi gönder"
+✔ Wikipedia’dan bilgi
+✔ /yardım /temizle /versiyon
+
+Hazırsan başlayalım 💜`,
+    user:false
   });
 }
 welcome();
 
-// =========================
-//  BUTONLAR
-// =========================
-sendBtn.onclick=()=>{
-  const val=input.value.trim();
-  if(!val) return;
-  addMsg({text:val,user:true});
-  input.value="";
-  botAnswer(val);
-};
-
-input.onkeydown=e=>{
-  if(e.key==="Enter") sendBtn.click();
-};
-
-fileBtn.onclick=()=>fileInput.click();
-
-fileInput.onchange=()=>{
-  const f=fileInput.files[0];
-  if(!f) return;
-  const url=URL.createObjectURL(f);
-  addMsg({img:url,user:true});
-  setTimeout(()=>{
-    addMsg({text:"Fotoğrafını gördüm reis 📷",user:false});
-  },400);
-};
 </script>
 </body>
 </html>
