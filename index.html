@@ -2,259 +2,487 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <title>MØR•AI v3</title>
+  <title>MØR•AI – sade sürüm</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
     :root {
       --bg: #0b0f19;
-      --bg2: #131a2a;
-      --accent: #a855f7;
-      --text-main: #e5e7eb;
-      --text-soft: #94a3b8;
+      --bg2: #111827;
+      --accent: #8b5cf6;
       --user-bubble: linear-gradient(135deg,#6366f1,#a855f7);
-      --border: rgba(148,163,184,0.18);
+      --text-main: #e5e7eb;
+      --text-soft: #9ca3af;
+      --border: rgba(148,163,184,0.25);
     }
+
+    * { box-sizing:border-box; margin:0; padding:0; }
+
     body {
-      background: radial-gradient(circle at top,var(--bg2),var(--bg));
-      display:flex;justify-content:center;align-items:center;
-      height:100vh;margin:0;
-      font-family:system-ui,sans-serif;
+      background: radial-gradient(circle at top,#1f2937,#020617);
+      height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color:var(--text-main);
     }
+
     .app {
-      width:100%;max-width:540px;height:100vh;
-      display:flex;flex-direction:column;
+      width:100%;
+      max-width:540px;
+      height:100vh;
+      max-height:820px;
       background:var(--bg2);
+      border-radius:18px;
       border:1px solid var(--border);
+      display:flex;
+      flex-direction:column;
       overflow:hidden;
+      box-shadow:0 24px 60px rgba(15,23,42,0.8);
     }
+
     .header {
-      padding:12px 16px;
-      background:#111827cc;
+      padding:10px 16px;
+      background:#020617dd;
       border-bottom:1px solid var(--border);
-      display:flex;justify-content:space-between;align-items:center;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
     }
-    .logo {font-weight:900;letter-spacing:.2rem;}
-    .online {
-      font-size:10px;padding:3px 10px;
+
+    .brand {
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .logo {
+      width:30px;
+      height:30px;
       border-radius:999px;
-      background:#22c55e33;color:#22c55e;
-      border:1px solid #22c55e55;
+      background:radial-gradient(circle at 30% 30%,#f9fafb,#8b5cf6);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:14px;
+      font-weight:800;
+      color:#020617;
     }
-    .motto {
-      padding:5px 14px;
-      font-size:10px;color:var(--text-soft);
-      background:#0f172acc;text-align:center;
-      border-bottom:1px solid var(--border);
+
+    .titles h1 {
+      font-size:14px;
+      letter-spacing:.18em;
     }
-    .chat {
-      flex:1;overflow-y:auto;padding:14px;scroll-behavior:smooth;
-    }
-    .chat::-webkit-scrollbar {width:6px;}
-    .chat::-webkit-scrollbar-thumb {
-      background:#334155;border-radius:8px;
-    }
-    .msg-row {
-      max-width:78%;margin-bottom:12px;
-      animation:fadeIn .25s ease;
-    }
-    @keyframes fadeIn {
-      from {opacity:0;transform:translateY(6px);}
-    }
-    .msg-row.user {align-self:flex-end;text-align:right;}
-    .msg-row.bot {align-self:flex-start;}
-    .bubble {
-      background:#1f2937;
-      padding:10px 12px;border-radius:14px;
-      font-size:14px;line-height:1.35;
-      white-space:pre-line;
-    }
-    .msg-row.user .bubble {
-      background:var(--user-bubble);color:white;
-      border-bottom-right-radius:4px;
-    }
-    .bubble img {
-      max-width:240px;border-radius:12px;margin-bottom:6px;
-    }
-    .meta {
-      font-size:10px;margin-top:3px;
+
+    .titles span {
+      font-size:10px;
       color:var(--text-soft);
     }
-    .input-bar {
-      padding:10px;border-top:1px solid var(--border);
-      background:#111827dd;
-      display:flex;gap:6px;
-    }
-    #file {display:none;}
-    .icon {
-      width:38px;border-radius:999px;
-      border:1px solid #475569;
-      background:#1f2937;color:white;
-      display:flex;align-items:center;justify-content:center;
-      cursor:pointer;font-size:16px;
-    }
-    #input {
-      flex:1;background:#1e293b;
-      border:1px solid #475569;
+
+    .online {
+      font-size:10px;
+      padding:3px 9px;
       border-radius:999px;
-      padding:8px 12px;
-      color:var(--text-main);outline:none;
+      border:1px solid #22c55e66;
+      background:#022c2288;
+      color:#4ade80;
     }
-    #input:focus {
-      border-color:var(--accent);
-      box-shadow:0 0 0 2px #8b5cf633;
+
+    .motto {
+      padding:6px 12px;
+      font-size:11px;
+      border-bottom:1px solid var(--border);
+      background:#020617f2;
+      color:var(--text-soft);
+      text-align:center;
     }
-    #send {
-      width:45px;border-radius:999px;
-      border:none;background:var(--accent);
-      color:white;cursor:pointer;font-size:17px;
+
+    .chat {
+      flex:1;
+      padding:12px 10px;
+      overflow-y:auto;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      background:radial-gradient(circle at top,rgba(148,163,184,0.2),transparent 60%);
     }
+
+    .chat::-webkit-scrollbar { width:6px; }
+    .chat::-webkit-scrollbar-thumb {
+      background:#374151;
+      border-radius:999px;
+    }
+
+    .msg-row {
+      max-width:80%;
+      display:flex;
+      flex-direction:column;
+      animation:fadein .25s ease-out;
+    }
+
+    .msg-row.user { align-self:flex-end; }
+    .msg-row.bot { align-self:flex-start; }
+
+    @keyframes fadein {
+      from { opacity:0; transform:translateY(4px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    .bubble {
+      font-size:14px;
+      line-height:1.35;
+      white-space:pre-line;
+    }
+
+    /* sadece kullanıcı balonlu */
+    .msg-row.user .bubble {
+      background:var(--user-bubble);
+      color:#f9fafb;
+      padding:8px 11px;
+      border-radius:14px;
+      border-bottom-right-radius:4px;
+    }
+
+    /* bot düz yazı – balon yok */
+    .msg-row.bot .bubble {
+      padding:0;
+      background:transparent;
+      color:var(--text-main);
+    }
+
+    .bubble img {
+      max-width:240px;
+      max-height:240px;
+      border-radius:12px;
+      display:block;
+      margin-bottom:6px;
+      object-fit:cover;
+    }
+
+    .meta {
+      font-size:10px;
+      color:var(--text-soft);
+      margin-top:3px;
+    }
+
+    .meta.right { text-align:right; }
 
     .typing {
       font-size:11px;
       color:var(--text-soft);
-      margin:0 0 8px 8px;
-      animation:fade .8s infinite alternate;
+      margin-left:4px;
+      margin-bottom:4px;
+      animation:fade 0.8s infinite alternate;
     }
-    @keyframes fade {from{opacity:.4;}to{opacity:1;}}
+
+    @keyframes fade {
+      from { opacity:.4; }
+      to   { opacity:1; }
+    }
+
+    .input-bar {
+      padding:8px 10px 10px;
+      border-top:1px solid var(--border);
+      background:#020617f2;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    #fileInput { display:none; }
+
+    .icon-btn {
+      width:38px;
+      height:34px;
+      border-radius:999px;
+      border:1px solid #4b5563;
+      background:#111827;
+      color:#e5e7eb;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:17px;
+      cursor:pointer;
+    }
+
+    #input {
+      flex:1;
+      border-radius:999px;
+      border:1px solid #4b5563;
+      background:#020617;
+      color:var(--text-main);
+      padding:8px 11px;
+      font-size:14px;
+      outline:none;
+    }
+
+    #input::placeholder {
+      color:#6b7280;
+    }
+
+    #input:focus {
+      border-color:var(--accent);
+      box-shadow:0 0 0 2px rgba(139,92,246,0.35);
+    }
+
+    #sendBtn {
+      width:42px;
+      height:34px;
+      border-radius:999px;
+      border:none;
+      background:var(--accent);
+      color:#f9fafb;
+      cursor:pointer;
+      font-size:17px;
+    }
+
+    @media (max-width:600px) {
+      .app { border-radius:0; max-height:100vh; }
+    }
   </style>
 </head>
 
 <body>
   <div class="app">
-    <div class="header">
-      <div class="logo">MØR•AI</div>
-      <div class="online">çevrimiçi</div>
-    </div>
+    <header class="header">
+      <div class="brand">
+        <div class="logo">Ø</div>
+        <div class="titles">
+          <h1>MØR•AI</h1>
+          <span>TR bot · wiki + görsel</span>
+        </div>
+      </div>
+      <span class="online">çevrimiçi</span>
+    </header>
 
-    <div class="motto">Ben MØR•AI: Sallamadan konuşurum.</div>
+    <div class="motto">Ben MØR•AI: Sallamadan konuşurum. (Kaynak: Wikipedia + görsel arama)</div>
 
-    <div class="chat" id="chat"></div>
+    <main class="chat" id="chat"></main>
 
     <div class="input-bar">
-      <label for="file" class="icon">📎</label>
-      <input type="file" id="file" accept="image/*" />
+      <input type="file" id="fileInput" accept="image/*" />
+      <button class="icon-btn" id="fileBtn">📎</button>
       <input id="input" type="text" placeholder="Bir şey yaz reis…" />
-      <button id="send">➡️</button>
+      <button id="sendBtn">➡️</button>
     </div>
   </div>
 
   <script>
-    const chatEl=document.getElementById("chat");
-    const inputEl=document.getElementById("input");
-    const sendBtn=document.getElementById("send");
-    const fileInput=document.getElementById("file");
+    const chatEl   = document.getElementById("chat");
+    const inputEl  = document.getElementById("input");
+    const sendBtn  = document.getElementById("sendBtn");
+    const fileBtn  = document.getElementById("fileBtn");
+    const fileInput= document.getElementById("fileInput");
 
-    function now(){const d=new Date();
-      return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+    function nowTime() {
+      const d = new Date();
+      return String(d.getHours()).padStart(2,"0")+":"+
+             String(d.getMinutes()).padStart(2,"0");
     }
 
-    function addMsg({text="",user=false,img=null}){
-      const row=document.createElement("div");
-      row.className="msg-row "+(user?"user":"bot");
-      const bubble=document.createElement("div");
-      bubble.className="bubble";
-      if(img){const i=document.createElement("img");
-        i.src=img;bubble.appendChild(i);}
-      if(text) bubble.appendChild(document.createTextNode(text));
-      const meta=document.createElement("div");
-      meta.className="meta";meta.textContent=now();
-      row.appendChild(bubble);row.appendChild(meta);
-      chatEl.appendChild(row);chatEl.scrollTop=chatEl.scrollHeight;
+    function addMessage({ text = "", isUser = false, imageUrl = null }) {
+      const row   = document.createElement("div");
+      row.className = "msg-row " + (isUser ? "user" : "bot");
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+
+      if (imageUrl) {
+        const img = document.createElement("img");
+        img.src = imageUrl;
+        img.alt = "görsel";
+        bubble.appendChild(img);
+      }
+
+      if (text) {
+        bubble.appendChild(document.createTextNode(text));
+      }
+
+      const meta = document.createElement("div");
+      meta.className = "meta" + (isUser ? " right" : "");
+      meta.textContent = nowTime();
+
+      row.appendChild(bubble);
+      row.appendChild(meta);
+      chatEl.appendChild(row);
+      chatEl.scrollTop = chatEl.scrollHeight;
     }
 
-    function typing(on){
-      if(on){
-        if(!document.getElementById("typing")){
-          const t=document.createElement("div");
-          t.id="typing";t.className="typing";
-          t.textContent="MØR•AI yazıyor… ⚪⚪⚪";
+    function showTyping(show) {
+      let t = document.getElementById("typing");
+      if (show) {
+        if (!t) {
+          t = document.createElement("div");
+          t.id = "typing";
+          t.className = "typing";
+          t.textContent = "MØR•AI yazıyor… ⚪⚪⚪";
           chatEl.appendChild(t);
-          chatEl.scrollTop=chatEl.scrollHeight;
         }
       } else {
-        const t=document.getElementById("typing");
-        if(t)t.remove();
+        if (t) t.remove();
+      }
+      chatEl.scrollTop = chatEl.scrollHeight;
+    }
+
+    function detectImageTopic(text) {
+      const lower = text.toLowerCase();
+      const hasImageWord =
+        lower.includes("resim") ||
+        lower.includes("resmi") ||
+        lower.includes("foto") ||
+        lower.includes("fotoğraf") ||
+        lower.includes("fotograf") ||
+        lower.includes("görsel") ||
+        lower.includes("gorsel");
+
+      if (!hasImageWord) return null;
+
+      const cleaned = lower
+        .replace("bana", "")
+        .replace("resmi", "")
+        .replace("resim", "")
+        .replace("fotoğrafını", "")
+        .replace("fotoğraf", "")
+        .replace("fotograf", "")
+        .replace("görselini", "")
+        .replace("görsel", "")
+        .trim();
+
+      return cleaned || "nature";
+    }
+
+    function normalizeWikiQuery(text) {
+      let t = text.toLowerCase();
+      t = t.replace(/\?/g, " ");
+      t = t.replace(/ nedir/g, " ");
+      t = t.replace(/ kimdir/g, " ");
+      t = t.replace(/ hakkında bilgi ver/g, " ");
+      t = t.replace(/bana /g, " ");
+      t = t.replace(/\s+/g, " ").trim();
+      return t || text.trim();
+    }
+
+    async function fetchWikiSummary(query) {
+      const q   = normalizeWikiQuery(query);
+      const url = "https://tr.wikipedia.org/api/rest_v1/page/summary/" +
+                   encodeURIComponent(q);
+
+      try {
+        const res = await fetch(url);
+        if (!res.ok) return null;
+        const data = await res.json();
+        if (!data.extract) return null;
+
+        let text = data.extract;
+        if (text.length > 900) {
+          text = text.slice(0, 880) + "...";
+        }
+        text += "\n\nKaynak: Vikipedi";
+        return text;
+      } catch (e) {
+        console.error("Wiki hatası:", e);
+        return null;
       }
     }
 
-    function tone(t){
-      t=t.toLowerCase();
-      if(t.includes("reis"))return"street";
-      if(t.includes("nedir")||t.includes("kimdir"))return"serious";
-      if(t.includes("allah"))return"spiritual";
-      return"normal";
+    function searchImage(topic) {
+      const url =
+        "https://images.weserv.nl/?url=source.unsplash.com/600x400/?" +
+        encodeURIComponent(topic);
+
+      addMessage({
+        text: `"${topic}" için bir görsel gösteriyorum 📷 (kaynak: Unsplash)`,
+        isUser: false,
+        imageUrl: url,
+      });
     }
 
-    function wrap(t,txt){
-      if(t==="street")return"Reis, sana şöyle bir özet buldum:\n\n"+txt;
-      if(t==="serious")return"İşte güvenilir özet:\n\n"+txt;
-      if(t==="spiritual")return"Kısaca böyle anlatılıyor:\n\n"+txt;
-      return txt;
-    }
-
-    function picTopic(t){
-      t=t.toLowerCase();
-      if(t.includes("resim")||t.includes("foto")||t.includes("görsel")){
-        return t.replace(/bana|resmi|resim|fotoğraf/g,"").trim()||"nature";
-      }
-      return null;
-    }
-
-    async function wiki(q){
-      q=q.toLowerCase().replace(" nedir","");
-      const url="https://tr.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(q);
-      try{
-        const r=await fetch(url);
-        if(!r.ok)return null;
-        const d=await r.json();
-        return d.extract||null;
-      }catch(e){return null;}
-    }
-
-    async function botAI(text){
-      typing(true);
-      await new Promise(r=>setTimeout(r,800));
-      typing(false);
-
-      const t=tone(text);
-
-      const topic=picTopic(text);
-      if(topic){
-        const url="https://images.weserv.nl/?url=source.unsplash.com/600x400/?"+encodeURIComponent(topic);
-        addMsg({text:`"${topic}" görseli 📷`,img:url});
+    async function handleBotReply(userText) {
+      const topic = detectImageTopic(userText);
+      if (topic) {
+        showTyping(true);
+        await new Promise(r => setTimeout(r, 600));
+        showTyping(false);
+        searchImage(topic);
         return;
       }
 
-      addMsg({text:"Bakıyorum reis…"});
-      const w=await wiki(text);
-      if(w) addMsg({text:wrap(t,w)});
-      else addMsg({text:"Buna kaynak bulamadım reis. Uydurmak istemiyorum."});
+      showTyping(true);
+      addMessage({
+        text: "Bakıyorum reis, Vikipedi'de bir şey bulabilecek miyim…",
+        isUser: false,
+      });
+
+      const wikiText = await fetchWikiSummary(userText);
+      showTyping(false);
+
+      if (wikiText) {
+        addMessage({ text: wikiText, isUser: false });
+      } else {
+        addMessage({
+          text:
+            "Bu konuda güvenilir bir özet bulamadım reis. Uydurmak istemiyorum.\n" +
+            "Soruyu biraz daha açık veya farklı sorabilirsin.",
+          isUser: false,
+        });
+      }
     }
 
-    function send(){
-      const v=inputEl.value.trim();
-      if(!v)return;
-      addMsg({text:v,user:true});
-      inputEl.value="";
-      botAI(v);
+    function sendTextMessage() {
+      const text = inputEl.value.trim();
+      if (!text) return;
+      addMessage({ text, isUser: true });
+      inputEl.value = "";
+      inputEl.focus();
+      handleBotReply(text);
     }
 
-    sendBtn.onclick=send;
-    inputEl.onkeydown=e=>{if(e.key==="Enter")send();};
+    sendBtn.addEventListener("click", sendTextMessage);
+    inputEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        sendTextMessage();
+      }
+    });
 
-    fileInput.onchange=()=>{
-      const f=fileInput.files[0];
-      if(!f)return;
-      const url=URL.createObjectURL(f);
-      addMsg({img:url,user:true});
-      botAI("bu fotoğraf"); 
-      setTimeout(()=>URL.revokeObjectURL(url),5000);
-    };
+    fileBtn.addEventListener("click", () => {
+      fileInput.value = "";
+      fileInput.click();
+    });
 
-    addMsg({text:"Selam reis! Hazırım 💜"});
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+
+      addMessage({
+        imageUrl: url,
+        isUser: true,
+        text: "",
+      });
+
+      setTimeout(() => {
+        addMessage({
+          text: "Fotoğrafını gördüm reis 📷 İstersen biraz da ne olduğunu anlat.",
+          isUser: false,
+        });
+      }, 400);
+
+      setTimeout(() => URL.revokeObjectURL(url), 15000);
+    });
+
+    // İlk karşılama
+    addMessage({
+      text:
+`Selam reis 💜
+Ben MØR•AI.
+
+• Wikipedia'dan Türkçe özet bulmaya çalışırım
+• "bana kedi resmi gönder" dersen görsel de gösteririm
+• Uydurma yok, bilmediğimde açıkça söylerim.`,
+      isUser: false,
+    });
   </script>
-
 </body>
 </html>
