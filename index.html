@@ -2,240 +2,323 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <title>MØR•AI v3 – sade ve stabil</title>
+  <title>MØR•AI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
     :root {
-      --bg: #020617;
-      --bg2: #0b1120;
+      --bg: #0f172a;
+      --bg-grad: radial-gradient(circle at top, #1f2937 0, #020617 55%, #020617 100%);
+      --card-bg: #020617;
+      --border: rgba(148, 163, 184, 0.4);
       --accent: #8b5cf6;
-      --user-bubble: linear-gradient(135deg,#6366f1,#a855f7);
+      --user-bubble: linear-gradient(135deg, #6366f1, #a855f7);
       --text-main: #e5e7eb;
       --text-soft: #9ca3af;
-      --border: rgba(148,163,184,0.28);
+      --input-bg: rgba(15, 23, 42, 0.85);
+      --header-bg: radial-gradient(circle at top left, #1d283a, #020617 65%);
+      --hint-bg: rgba(15, 23, 42, 0.9);
+      --panel-bg: rgba(15, 23, 42, 0.95);
     }
 
-    * { box-sizing:border-box; margin:0; padding:0; }
+    body.light {
+      --bg: #e5e7eb;
+      --bg-grad: radial-gradient(circle at top, #f3f4f6 0, #e5e7eb 40%, #d1d5db 100%);
+      --card-bg: #f9fafb;
+      --border: rgba(148, 163, 184, 0.7);
+      --accent: #6366f1;
+      --user-bubble: linear-gradient(135deg, #6366f1, #8b5cf6);
+      --text-main: #111827;
+      --text-soft: #6b7280;
+      --input-bg: #ffffff;
+      --header-bg: linear-gradient(135deg, #6366f1, #8b5cf6);
+      --hint-bg: #e5e7eb;
+      --panel-bg: #f3f4f6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
-      height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background: radial-gradient(circle at top,#1e293b,var(--bg));
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color:var(--text-main);
+      background: var(--bg-grad);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      color: var(--text-main);
     }
 
     .app {
-      width:100%;
-      max-width:540px;
-      height:100vh;
-      max-height:820px;
-      background:var(--bg2);
-      border-radius:18px;
-      border:1px solid var(--border);
-      display:flex;
-      flex-direction:column;
-      overflow:hidden;
-      box-shadow:0 24px 60px rgba(15,23,42,0.8);
+      width: 100%;
+      max-width: 540px;
+      height: 100vh;
+      max-height: 820px;
+      background: var(--card-bg);
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.75);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
 
     .header {
-      padding:10px 16px;
-      background:#020617f2;
-      border-bottom:1px solid var(--border);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--header-bg);
     }
 
-    .brand { display:flex; align-items:center; gap:8px; }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
     .logo {
-      width:30px; height:30px; border-radius:999px;
-      background:radial-gradient(circle at 30% 30%,#f9fafb,#8b5cf6);
-      display:flex; align-items:center; justify-content:center;
-      font-size:14px; font-weight:800; color:#020617;
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, #f9fafb, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 15px;
+      color: #0f172a;
     }
 
     .titles h1 {
-      font-size:14px;
-      letter-spacing:.18em;
+      font-size: 16px;
+      letter-spacing: 0.14em;
     }
 
     .titles span {
-      font-size:10px;
-      color:var(--text-soft);
+      font-size: 11px;
+      color: var(--text-soft);
     }
 
-    .online {
-      font-size:10px;
-      padding:3px 9px;
-      border-radius:999px;
-      border:1px solid #22c55e66;
-      background:#022c2288;
-      color:#4ade80;
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .motto {
-      padding:6px 12px;
-      font-size:11px;
-      border-bottom:1px solid var(--border);
-      background:#020617f2;
-      color:var(--text-soft);
-      text-align:center;
+    .pill {
+      font-size: 11px;
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 999px;
+      padding: 4px 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: #e5e7eb;
+    }
+
+    body.light .pill {
+      background: rgba(15, 23, 42, 0.12);
+      color: #111827;
+    }
+
+    .pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+    }
+
+    .theme-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.85);
+      color: #e5e7eb;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+    }
+
+    body.light .theme-btn {
+      background: #f9fafb;
+      color: #111827;
+      border-color: rgba(148, 163, 184, 0.7);
+    }
+
+    .hint {
+      padding: 6px 14px 8px;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-soft);
+      background: var(--hint-bg);
+    }
+
+    .hint span {
+      background: rgba(55, 65, 81, 0.8);
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 10px;
+      margin-right: 4px;
+      color: #e5e7eb;
+    }
+
+    body.light .hint span {
+      background: rgba(55, 65, 81, 0.1);
+      color: #111827;
     }
 
     .chat {
-      flex:1;
-      padding:10px 10px 12px;
-      overflow-y:auto;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      background:radial-gradient(circle at top,rgba(148,163,184,0.18),transparent 60%);
+      flex: 1;
+      padding: 10px 10px 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: radial-gradient(circle at top, rgba(148, 163, 184, 0.18), transparent 55%);
     }
 
-    .chat::-webkit-scrollbar { width:6px; }
+    .chat::-webkit-scrollbar {
+      width: 6px;
+    }
     .chat::-webkit-scrollbar-thumb {
-      background:#374151;
-      border-radius:999px;
+      background: rgba(148, 163, 184, 0.8);
+      border-radius: 999px;
     }
 
     .msg-row {
-      max-width:80%;
-      display:flex;
-      flex-direction:column;
-      animation:fadein .25s ease-out;
+      display: flex;
+      flex-direction: column;
+      max-width: 78%;
     }
 
     .msg-row.user {
-      align-self:flex-end;
-      text-align:right;
+      align-self: flex-end;
     }
 
     .msg-row.bot {
-      align-self:flex-start;
-      text-align:left;
-    }
-
-    @keyframes fadein {
-      from { opacity:0; transform:translateY(4px); }
-      to   { opacity:1; transform:translateY(0); }
+      align-self: flex-start;
     }
 
     .bubble {
-      font-size:14px;
-      line-height:1.35;
-      white-space:pre-line;
+      padding: 9px 12px;
+      border-radius: 14px;
+      background: transparent;
+      color: var(--text-main);
+      font-size: 14px;
+      line-height: 1.35;
+      white-space: pre-line;
     }
 
     /* sadece kullanıcı balonlu */
     .msg-row.user .bubble {
-      background:var(--user-bubble);
-      color:#f9fafb;
-      padding:8px 11px;
-      border-radius:14px;
-      border-bottom-right-radius:4px;
+      background: var(--user-bubble);
+      color: #f9fafb;
+      border-radius: 16px;
+      border: none;
+      border-bottom-right-radius: 4px;
     }
 
-    /* bot düz metin – balon yok */
+    /* bot düz metin, balon yok */
     .msg-row.bot .bubble {
-      padding:0;
-      background:transparent;
-      color:var(--text-main);
+      padding: 0;
+      border: none;
+      border-radius: 0;
     }
 
     .bubble img {
-      max-width:240px;
-      max-height:240px;
-      border-radius:12px;
-      display:block;
-      margin-bottom:6px;
-      object-fit:cover;
+      display: block;
+      max-width: 260px;
+      max-height: 260px;
+      border-radius: 12px;
+      object-fit: cover;
     }
 
     .meta {
-      font-size:10px;
-      color:var(--text-soft);
-      margin-top:3px;
+      font-size: 10px;
+      color: var(--text-soft);
+      margin-top: 3px;
     }
 
-    .meta.right { text-align:right; }
-
-    .typing {
-      font-size:11px;
-      color:var(--text-soft);
-      margin-left:4px;
-      margin-bottom:4px;
-      animation:fade 0.8s infinite alternate;
-    }
-
-    @keyframes fade {
-      from { opacity:.4; }
-      to   { opacity:1; }
+    .meta.right {
+      text-align: right;
     }
 
     .input-bar {
-      padding:8px 10px 10px;
-      border-top:1px solid var(--border);
-      background:#020617f2;
-      display:flex;
-      align-items:center;
-      gap:6px;
+      padding: 8px 10px 10px;
+      border-top: 1px solid var(--border);
+      background: var(--panel-bg);
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    #fileInput { display:none; }
-
     .icon-btn {
-      width:38px;
-      height:34px;
-      border-radius:999px;
-      border:1px solid #4b5563;
-      background:#111827;
-      color:#e5e7eb;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:17px;
-      cursor:pointer;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.8);
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+    }
+
+    body.light .icon-btn {
+      background: #ffffff;
+      color: #111827;
+      border-color: rgba(148, 163, 184, 0.7);
     }
 
     #input {
-      flex:1;
-      border-radius:999px;
-      border:1px solid #4b5563;
-      background:#020617;
-      color:var(--text-main);
-      padding:8px 11px;
-      font-size:14px;
-      outline:none;
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: var(--input-bg);
+      color: var(--text-main);
+      padding: 8px 11px;
+      font-size: 14px;
+      outline: none;
     }
 
     #input::placeholder {
-      color:#6b7280;
+      color: rgba(148, 163, 184, 0.9);
     }
 
-    #input:focus {
-      border-color:var(--accent);
-      box-shadow:0 0 0 2px rgba(139,92,246,0.35);
+    body.light #input {
+      border-color: rgba(148, 163, 184, 0.7);
     }
 
     #sendBtn {
-      width:42px;
-      height:34px;
-      border-radius:999px;
-      border:none;
-      background:var(--accent);
-      color:#f9fafb;
-      cursor:pointer;
-      font-size:17px;
+      width: 40px;
+      height: 34px;
+      border-radius: 999px;
+      border: none;
+      background: var(--accent);
+      color: #f9fafb;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
     }
 
-    @media (max-width:600px) {
-      .app { border-radius:0; max-height:100vh; }
+    @media (max-width: 480px) {
+      .app {
+        max-height: 100vh;
+        border-radius: 0;
+      }
     }
   </style>
 </head>
@@ -250,58 +333,95 @@
           <span>TR bot · wiki + görsel</span>
         </div>
       </div>
-      <span class="online">çevrimiçi</span>
+      <div class="header-right">
+        <div class="pill">
+          <span class="pill-dot"></span>
+          çevrimiçi
+        </div>
+        <button class="theme-btn" id="themeBtn">🌙</button>
+      </div>
     </header>
 
-    <div class="motto">Ben MØR•AI: Sallamadan konuşurum. (Wikipedia + görsel, uydurma yok.)</div>
+    <div class="hint">
+      <span>örnek</span>
+      “Boz ayı nedir?” · “Bana kedi resmi gönder” · “İstanbul”
+    </div>
 
-    <main class="chat" id="chat"></main>
+    <div class="chat" id="chat">
+      <div class="msg-row bot">
+        <div class="bubble">
+Hoş geldin 💜
+Ben tarayıcı içinde çalışan küçük bir MØR•AI’yim.
+
+• Metin yaz → Vikipedi’den özet bulmaya çalışırım  
+• “bana kedi resmi gönder” → internetten görsel çekerim  
+• 📷 tuşuyla → kendi fotoğrafını gönderebilirsin (sadece gösteririm)
+
+Bilmediğim konuda “bulamadım, sallamıyorum” derim; uydurma yok.
+        </div>
+        <div class="meta">şimdi</div>
+      </div>
+    </div>
 
     <div class="input-bar">
-      <input type="file" id="fileInput" accept="image/*" />
-      <button class="icon-btn" id="fileBtn">📎</button>
-      <input id="input" type="text" placeholder="Bir şey yaz reis…" />
+      <input type="file" id="fileInput" accept="image/*" style="display:none" />
+      <button class="icon-btn" id="fileBtn">📷</button>
+      <input id="input" type="text" placeholder="Bir şey yaz..." />
       <button id="sendBtn">➡️</button>
     </div>
   </div>
 
   <script>
-    var chatEl    = document.getElementById("chat");
-    var inputEl   = document.getElementById("input");
-    var sendBtn   = document.getElementById("sendBtn");
-    var fileBtn   = document.getElementById("fileBtn");
-    var fileInput = document.getElementById("fileInput");
+    const chatEl = document.getElementById("chat");
+    const inputEl = document.getElementById("input");
+    const sendBtn = document.getElementById("sendBtn");
+    const fileBtn = document.getElementById("fileBtn");
+    const fileInput = document.getElementById("fileInput");
+    const themeBtn = document.getElementById("themeBtn");
+
+    // Tema switch
+    let dark = true;
+    themeBtn.addEventListener("click", () => {
+      dark = !dark;
+      document.body.classList.toggle("light", !dark);
+      themeBtn.textContent = dark ? "🌙" : "☀️";
+    });
 
     function nowTime() {
-      var d = new Date();
-      var h = String(d.getHours()).padStart(2,"0");
-      var m = String(d.getMinutes()).padStart(2,"0");
-      return h + ":" + m;
+      const d = new Date();
+      return (
+        String(d.getHours()).padStart(2, "0") +
+        ":" +
+        String(d.getMinutes()).padStart(2, "0")
+      );
     }
 
-    function addMessage(opts) {
-      var text = opts.text || "";
-      var isUser = opts.isUser || false;
-      var imageUrl = opts.imageUrl || null;
-
-      var row = document.createElement("div");
+    function addMessage({ text = "", isUser = false, imageUrl = null }) {
+      const row = document.createElement("div");
       row.className = "msg-row " + (isUser ? "user" : "bot");
 
-      var bubble = document.createElement("div");
+      const bubble = document.createElement("div");
       bubble.className = "bubble";
 
       if (imageUrl) {
-        var img = document.createElement("img");
+        const img = document.createElement("img");
         img.src = imageUrl;
         img.alt = "görsel";
         bubble.appendChild(img);
       }
 
       if (text) {
-        bubble.appendChild(document.createTextNode(text));
+        if (imageUrl) {
+          const p = document.createElement("div");
+          p.style.marginTop = "6px";
+          p.textContent = text;
+          bubble.appendChild(p);
+        } else {
+          bubble.textContent = text;
+        }
       }
 
-      var meta = document.createElement("div");
+      const meta = document.createElement("div");
       meta.className = "meta" + (isUser ? " right" : "");
       meta.textContent = nowTime();
 
@@ -311,161 +431,264 @@
       chatEl.scrollTop = chatEl.scrollHeight;
     }
 
-    function showTyping(show) {
-      var t = document.getElementById("typing");
-      if (show) {
-        if (!t) {
-          t = document.createElement("div");
-          t.id = "typing";
-          t.className = "typing";
-          t.textContent = "MØR•AI yazıyor… ⚪⚪⚪";
-          chatEl.appendChild(t);
-        }
-      } else {
-        if (t) { t.parentNode.removeChild(t); }
+    // ❗ Ton algılama – çok kişilikli sistem
+    function detectTone(text) {
+      const lower = text.toLowerCase();
+
+      const firmWords = [
+        "olmuyo",
+        "olmuyor",
+        "çalışmıyo",
+        "çalışmıyor",
+        "calismiyo",
+        "calismiyor",
+        "sinir",
+        "delir",
+        "hata",
+        "bug",
+        "yanlış",
+        "yanlis",
+        "bozuk",
+        "saçma",
+        "sacma"
+      ];
+      if (firmWords.some((w) => lower.includes(w))) return "firm";
+
+      const streetWords = [
+        "reis",
+        "kanka",
+        "aga",
+        "ağa",
+        "kardes",
+        "kardeş",
+        "bro",
+        "abi",
+        "abii",
+        "dayı",
+        "dayi",
+        "la ",
+        " lan",
+        "oğlum",
+        "oglum",
+        "kral"
+      ];
+      if (streetWords.some((w) => lower.includes(w))) return "street";
+
+      const spiritualWords = [
+        "allah",
+        "iman",
+        "kalp",
+        "gönül",
+        "gonul",
+        "dua",
+        "teslimiyet",
+        "sabır",
+        "sabir",
+        "namaz",
+        "rab",
+        "ahiret",
+        "tevbe",
+        "tefekkür",
+        "tefekkur"
+      ];
+      if (spiritualWords.some((w) => lower.includes(w))) return "spiritual";
+
+      const seriousWords = [
+        "nedir",
+        "kimdir",
+        "tarih",
+        "tarihi",
+        "kaynak",
+        "bilgi",
+        "açıkla",
+        "acikla",
+        "detay",
+        "tanım",
+        "tanim",
+        "özeti",
+        "ozeti",
+        "özet",
+        "ozet",
+        "analiz"
+      ];
+      if (seriousWords.some((w) => lower.includes(w))) return "serious";
+
+      return "balanced";
+    }
+
+    function makeSearchMessage(tone) {
+      switch (tone) {
+        case "street":
+          return "Bakıyorum reis, sana düzgün bir şey bulmaya çalışıyorum…";
+        case "firm":
+          return "Tamam, bakıyorum. Ne var ne yok net bir özet çıkaracağım.";
+        case "spiritual":
+          return "Bu konuyu kaynaklardan tarıyorum; hem bilgi hem de anlam tarafını düzgün vereyim istiyorum…";
+        case "serious":
+          return "Sorunu Vikipedi ve benzeri kaynaklarda arıyorum, sana özetini getireceğim…";
+        default:
+          return "Sorunu Vikipedi'de arıyorum, uygun bir özet bulmaya çalışıyorum…";
       }
-      chatEl.scrollTop = chatEl.scrollHeight;
+    }
+
+    function makeNotFoundMessage(tone) {
+      switch (tone) {
+        case "street":
+          return "Reis bu konuda doğru düzgün kaynak bulamadım. Sallamak istemiyorum, soruyu biraz değiştirelim mi? 😅";
+        case "firm":
+          return "Buna dair güvenilir bir şey bulamadım. Rastgele bir şey yazıp seni yanlış yönlendirmek istemiyorum.";
+        case "spiritual":
+          return "Bu başlıkta net bir kaynak bulamadım. Uydurup kalbini karıştırmak istemem; biraz daha açabilirsen beraber bakarız inşallah. 🌿";
+        case "serious":
+          return "Bu konuda güvenilir bir özet bulamadım. Uydurmak istemiyorum; istersen daha spesifik veya farklı bir ifade deneyebilirsin.";
+        default:
+          return "Bu konuda anlamlı bir kaynak bulamadım. Uydurmak istemiyorum 😇\nSoruyu biraz daha farklı veya ayrıntılı sorabilirsin.";
+      }
+    }
+
+    function wrapWikiAnswer(tone, wikiText) {
+      switch (tone) {
+        case "street":
+          return "Reis, sana şöyle bir özet buldum:\n\n" + wikiText;
+        case "firm":
+          return "Bulabildiğim güvenilir özet şöyle:\n\n" + wikiText;
+        case "spiritual":
+          return "Kaynaklarda bu konu kısaca şöyle anlatılıyor:\n\n" + wikiText;
+        case "serious":
+          return "İlgili kaynaklardan derlenmiş kısa bir özet:\n\n" + wikiText;
+        default:
+          return wikiText;
+      }
     }
 
     function detectImageTopic(text) {
-      var lower = text.toLowerCase();
-      var hasImageWord =
-        lower.indexOf("resim") !== -1 ||
-        lower.indexOf("resmi") !== -1 ||
-        lower.indexOf("foto") !== -1 ||
-        lower.indexOf("fotoğraf") !== -1 ||
-        lower.indexOf("fotograf") !== -1 ||
-        lower.indexOf("görsel") !== -1 ||
-        lower.indexOf("gorsel") !== -1;
+      const lower = text.toLowerCase();
+      const hasImageWord =
+        lower.includes("resim") ||
+        lower.includes("resmi") ||
+        lower.includes("foto") ||
+        lower.includes("fotoğraf") ||
+        lower.includes("fotograf") ||
+        lower.includes("görsel") ||
+        lower.includes("gorsel");
 
       if (!hasImageWord) return null;
 
-      var cleaned = lower
-        .replace("bana","")
-        .replace("resmi","")
-        .replace("resim","")
-        .replace("fotoğrafını","")
-        .replace("fotoğraf","")
-        .replace("fotograf","")
-        .replace("görselini","")
-        .replace("görsel","")
+      const cleaned = lower
+        .replace("bana", "")
+        .replace("resmi", "")
+        .replace("resim", "")
+        .replace("fotoğrafını", "")
+        .replace("fotoğraf", "")
+        .replace("fotograf", "")
+        .replace("görselini", "")
+        .replace("görsel", "")
         .trim();
 
-      if (!cleaned) cleaned = "nature";
-      return cleaned;
+      return cleaned || "nature";
     }
 
     function normalizeWikiQuery(text) {
-      var t = text.toLowerCase();
+      let t = text.toLowerCase();
       t = t.replace(/\?/g, " ");
       t = t.replace(/ nedir/g, " ");
       t = t.replace(/ kimdir/g, " ");
       t = t.replace(/ hakkında bilgi ver/g, " ");
       t = t.replace(/bana /g, " ");
       t = t.replace(/\s+/g, " ").trim();
-      if (!t) t = text.trim();
-      return t;
+      return t || text.trim();
     }
 
-    function fetchWikiSummary(query) {
-      var q   = normalizeWikiQuery(query);
-      var url = "https://tr.wikipedia.org/api/rest_v1/page/summary/" +
-                encodeURIComponent(q);
+    async function fetchWikiSummary(query) {
+      const q = normalizeWikiQuery(query);
+      const url =
+        "https://tr.wikipedia.org/api/rest_v1/page/summary/" +
+        encodeURIComponent(q);
 
-      return fetch(url)
-        .then(function(res){
-          if (!res.ok) return null;
-          return res.json();
-        })
-        .then(function(data){
-          if (!data || !data.extract) return null;
-          var text = data.extract;
-          if (text.length > 900) {
-            text = text.slice(0, 880) + "...";
-          }
-          text += "\n\nKaynak: Vikipedi";
-          return text;
-        })
-        .catch(function(){
-          return null;
-        });
+      try {
+        const res = await fetch(url);
+        if (!res.ok) return null;
+        const data = await res.json();
+        if (!data.extract) return null;
+
+        let text = data.extract;
+        if (text.length > 900) {
+          text = text.slice(0, 880) + "...";
+        }
+        text += "\n\nKaynak: Vikipedi";
+        return text;
+      } catch (e) {
+        console.error("Wiki hatası:", e);
+        return null;
+      }
     }
 
     function searchImage(topic) {
-      var url =
+      const url =
         "https://images.weserv.nl/?url=source.unsplash.com/600x400/?" +
         encodeURIComponent(topic);
 
       addMessage({
-        text: '"' + topic + '" için bir görsel gösteriyorum 📷 (kaynak: Unsplash)',
+        text: `"${topic}" için bir görsel gösteriyorum 📷 (kaynak: Unsplash)`,
         isUser: false,
         imageUrl: url
       });
     }
 
-    function handleBotReply(userText) {
-      var topic = detectImageTopic(userText);
+    async function handleBotReply(userText) {
+      const tone = detectTone(userText);
+
+      // Görsel isteği varsa önce ona bak
+      const topic = detectImageTopic(userText);
       if (topic) {
-        showTyping(true);
-        setTimeout(function(){
-          showTyping(false);
-          searchImage(topic);
-        }, 600);
+        searchImage(topic);
         return;
       }
 
+      // Araştırma mesajı (tona göre)
       addMessage({
-        text: "Bakıyorum reis, Vikipedi'de bir şey bulabilecek miyim…",
+        text: makeSearchMessage(tone),
         isUser: false
       });
 
-      showTyping(true);
-
-      fetchWikiSummary(userText).then(function(wikiText){
-        showTyping(false);
-
-        if (wikiText) {
-          addMessage({
-            text: wikiText,
-            isUser: false
-          });
-        } else {
-          addMessage({
-            text:
-"Bu konuda güvenilir bir özet bulamadım reis.\n" +
-"Uydurmak istemiyorum. Soruyu biraz daha açık veya farklı sorabilirsin.",
-            isUser: false
-          });
-        }
-      });
+      const wikiText = await fetchWikiSummary(userText);
+      if (wikiText) {
+        const wrapped = wrapWikiAnswer(tone, wikiText);
+        addMessage({ text: wrapped, isUser: false });
+      } else {
+        addMessage({
+          text: makeNotFoundMessage(tone),
+          isUser: false
+        });
+      }
     }
 
     function sendTextMessage() {
-      var text = inputEl.value.trim();
+      const text = inputEl.value.trim();
       if (!text) return;
-      addMessage({ text: text, isUser: true });
+      addMessage({ text, isUser: true });
       inputEl.value = "";
       inputEl.focus();
       handleBotReply(text);
     }
 
     sendBtn.addEventListener("click", sendTextMessage);
-    inputEl.addEventListener("keydown", function(e) {
+    inputEl.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
         sendTextMessage();
       }
     });
 
-    fileBtn.addEventListener("click", function() {
+    fileBtn.addEventListener("click", () => {
       fileInput.value = "";
       fileInput.click();
     });
 
-    fileInput.addEventListener("change", function() {
-      var file = fileInput.files[0];
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
       if (!file) return;
-      var url = URL.createObjectURL(file);
+      const url = URL.createObjectURL(file);
 
       addMessage({
         imageUrl: url,
@@ -473,26 +696,14 @@
         text: ""
       });
 
-      setTimeout(function() {
+      setTimeout(() => {
         addMessage({
-          text: "Fotoğrafını gördüm reis 📷 İçindeki hikâyeyi merak ettim.",
+          text: "Fotoğrafını gördüm 📷 İstersen biraz da hikâyesini anlat.",
           isUser: false
         });
-      }, 500);
+      }, 400);
 
-      setTimeout(function(){ URL.revokeObjectURL(url); }, 15000);
-    });
-
-    // İlk karşılama
-    addMessage({
-      text:
-"Selam reis 💜\n" +
-"Ben MØR•AI.\n\n" +
-"• Wikipedia'dan Türkçe özet bulmaya çalışırım\n" +
-"• \"bana kedi resmi gönder\" dersen görsel de gösteririm\n" +
-"• Fotoğraf yüklersen sadece görüntülerim\n" +
-"• Uydurma yok; bilmediğimde açıkça söylerim.",
-      isUser: false
+      setTimeout(() => URL.revokeObjectURL(url), 15000);
     });
   </script>
 </body>
