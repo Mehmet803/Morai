@@ -389,8 +389,11 @@ Bilmediğim konuda “bulamadım, sallamıyorum” derim; uydurma yok.
 
     function nowTime() {
       const d = new Date();
-      return String(d.getHours()).padStart(2, "0") + ":" +
-             String(d.getMinutes()).padStart(2, "0");
+      return (
+        String(d.getHours()).padStart(2, "0") +
+        ":" +
+        String(d.getMinutes()).padStart(2, "0")
+      );
     }
 
     function addMessage({ text = "", isUser = false, imageUrl = null }) {
@@ -426,6 +429,121 @@ Bilmediğim konuda “bulamadım, sallamıyorum” derim; uydurma yok.
       row.appendChild(meta);
       chatEl.appendChild(row);
       chatEl.scrollTop = chatEl.scrollHeight;
+    }
+
+    // ❗ Ton algılama – çok kişilikli sistem
+    function detectTone(text) {
+      const lower = text.toLowerCase();
+
+      const firmWords = [
+        "olmuyo",
+        "olmuyor",
+        "çalışmıyo",
+        "çalışmıyor",
+        "calismiyo",
+        "calismiyor",
+        "sinir",
+        "delir",
+        "hata",
+        "bug",
+        "yanlış",
+        "yanlis",
+        "bozuk",
+        "saçma",
+        "sacma"
+      ];
+      if (firmWords.some((w) => lower.includes(w))) return "firm";
+
+      const streetWords = [
+        "reis",
+        "kanka",
+        "aga",
+        "ağa",
+        "kardes",
+        "kardeş",
+        "bro",
+        "abi",
+        "abii",
+        "dayı",
+        "dayi",
+        "la ",
+        " lan",
+        "oğlum",
+        "oglum",
+        "kral"
+      ];
+      if (streetWords.some((w) => lower.includes(w))) return "street";
+
+      const spiritualWords = [
+        "allah",
+        "iman",
+        "kalp",
+        "gönül",
+        "gonul",
+        "dua",
+        "teslimiyet",
+        "sabır",
+        "sabir",
+        "namaz",
+        "rab",
+        "ahiret",
+        "tevbe",
+        "tefekkür",
+        "tefekkur"
+      ];
+      if (spiritualWords.some((w) => lower.includes(w))) return "spiritual";
+
+      const seriousWords = [
+        "nedir",
+        "kimdir",
+        "tarih",
+        "tarihi",
+        "kaynak",
+        "bilgi",
+        "açıkla",
+        "acikla",
+        "detay",
+        "tanım",
+        "tanim",
+        "özeti",
+        "ozeti",
+        "özet",
+        "ozet",
+        "analiz"
+      ];
+      if (seriousWords.some((w) => lower.includes(w))) return "serious";
+
+      return "balanced";
+    }
+
+    function makeSearchMessage(tone) {
+      switch (tone) {
+        case "street":
+          return "Bakıyorum reis, sana düzgün bir şey bulmaya çalışıyorum…";
+        case "firm":
+          return "Tamam, bakıyorum. Ne var ne yok net bir özet çıkaracağım.";
+        case "spiritual":
+          return "Bu konuyu kaynaklardan tarıyorum; hem bilgi hem de anlam tarafını düzgün vereyim istiyorum…";
+        case "serious":
+          return "Sorunu Vikipedi ve benzeri kaynaklarda arıyorum, sana özetini getireceğim…";
+        default:
+          return "Sorunu Vikipedi'de arıyorum, uygun bir özet bulmaya çalışıyorum…";
+      }
+    }
+
+    function makeNotFoundMessage(tone) {
+      switch (tone) {
+        case "street":
+          return "Reis bu konuda doğru düzgün kaynak bulamadım. Sallamak istemiyorum, soruyu biraz değiştirelim mi? 😅";
+        case "firm":
+          return "Buna dair güvenilir bir şey bulamadım. Rastgele bir şey yazıp seni yanlış yönlendirmek istemiyorum.";
+        case "spiritual":
+          return "Bu başlıkta net bir kaynak bulamadım. Uydurup kalbini karıştırmak istemem; biraz daha açabilirsen beraber bakarız inşallah. 🌿";
+        case "serious":
+          return "Bu konuda güvenilir bir özet bulamadım. Uydurmak istemiyorum; istersen daha spesifik veya farklı bir ifade deneyebilirsin.";
+        default:
+          return "Bu konuda anlamlı bir kaynak bulamadım. Uydurmak istemiyorum 😇\nSoruyu biraz daha farklı veya ayrıntılı sorabilirsin.";
+      }
     }
 
     function detectImageTopic(text) {
@@ -468,8 +586,9 @@ Bilmediğim konuda “bulamadım, sallamıyorum” derim; uydurma yok.
 
     async function fetchWikiSummary(query) {
       const q = normalizeWikiQuery(query);
-      const url = "https://tr.wikipedia.org/api/rest_v1/page/summary/" +
-                  encodeURIComponent(q);
+      const url =
+        "https://tr.wikipedia.org/api/rest_v1/page/summary/" +
+        encodeURIComponent(q);
 
       try {
         const res = await fetch(url);
@@ -497,20 +616,24 @@ Bilmediğim konuda “bulamadım, sallamıyorum” derim; uydurma yok.
       addMessage({
         text: `"${topic}" için bir görsel gösteriyorum 📷 (kaynak: Unsplash)`,
         isUser: false,
-        imageUrl: url,
+        imageUrl: url
       });
     }
 
     async function handleBotReply(userText) {
+      const tone = detectTone(userText);
+
+      // Görsel isteği varsa önce ona bak
       const topic = detectImageTopic(userText);
       if (topic) {
         searchImage(topic);
         return;
       }
 
+      // Araştırma mesajı (tona göre)
       addMessage({
-        text: "Sorunu Vikipedi'de arıyorum, uygun bir özet bulmaya çalışıyorum…",
-        isUser: false,
+        text: makeSearchMessage(tone),
+        isUser: false
       });
 
       const wikiText = await fetchWikiSummary(userText);
@@ -518,10 +641,8 @@ Bilmediğim konuda “bulamadım, sallamıyorum” derim; uydurma yok.
         addMessage({ text: wikiText, isUser: false });
       } else {
         addMessage({
-          text:
-            "Bu konuda anlamlı bir kaynak bulamadım. Uydurmak istemiyorum 😇\n" +
-            "Soruyu biraz daha farklı veya ayrıntılı sorabilirsin.",
-          isUser: false,
+          text: makeNotFoundMessage(tone),
+          isUser: false
         });
       }
     }
@@ -556,13 +677,13 @@ Bilmediğim konuda “bulamadım, sallamıyorum” derim; uydurma yok.
       addMessage({
         imageUrl: url,
         isUser: true,
-        text: "",
+        text: ""
       });
 
       setTimeout(() => {
         addMessage({
           text: "Fotoğrafını gördüm 📷 İstersen biraz da hikâyesini anlat.",
-          isUser: false,
+          isUser: false
         });
       }, 400);
 
