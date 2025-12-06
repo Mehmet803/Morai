@@ -546,6 +546,21 @@ Bilmediğim konuda “bulamadım, sallamıyorum” derim; uydurma yok.
       }
     }
 
+    function wrapWikiAnswer(tone, wikiText) {
+      switch (tone) {
+        case "street":
+          return "Reis, sana şöyle bir özet buldum:\n\n" + wikiText;
+        case "firm":
+          return "Bulabildiğim güvenilir özet şöyle:\n\n" + wikiText;
+        case "spiritual":
+          return "Kaynaklarda bu konu kısaca şöyle anlatılıyor:\n\n" + wikiText;
+        case "serious":
+          return "İlgili kaynaklardan derlenmiş kısa bir özet:\n\n" + wikiText;
+        default:
+          return wikiText;
+      }
+    }
+
     function detectImageTopic(text) {
       const lower = text.toLowerCase();
       const hasImageWord =
@@ -638,7 +653,8 @@ Bilmediğim konuda “bulamadım, sallamıyorum” derim; uydurma yok.
 
       const wikiText = await fetchWikiSummary(userText);
       if (wikiText) {
-        addMessage({ text: wikiText, isUser: false });
+        const wrapped = wrapWikiAnswer(tone, wikiText);
+        addMessage({ text: wrapped, isUser: false });
       } else {
         addMessage({
           text: makeNotFoundMessage(tone),
