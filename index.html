@@ -2,401 +2,191 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <title>MØR•AI</title>
+  <title>MØR•AI v2.5</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
     :root {
-      --bg: #0f172a;
-      --bg-grad: radial-gradient(circle at top, #1f2937 0, #020617 55%, #020617 100%);
-      --card-bg: #020617;
-      --border: rgba(148, 163, 184, 0.4);
-      --accent: #8b5cf6;
+      --bg: #0b0f19;
+      --bg2: #131a2a;
+      --accent: #a855f7;
       --user-bubble: linear-gradient(135deg, #6366f1, #a855f7);
       --text-main: #e5e7eb;
       --text-soft: #9ca3af;
-      --input-bg: rgba(15, 23, 42, 0.85);
-      --header-bg: radial-gradient(circle at top left, #1d283a, #020617 65%);
-      --hint-bg: rgba(15, 23, 42, 0.9);
-      --panel-bg: rgba(15, 23, 42, 0.95);
+      --border: rgba(148,163,184,0.2);
     }
-
-    body.light {
-      --bg: #e5e7eb;
-      --bg-grad: radial-gradient(circle at top, #f3f4f6 0, #e5e7eb 40%, #d1d5db 100%);
-      --card-bg: #f9fafb;
-      --border: rgba(148, 163, 184, 0.7);
-      --accent: #6366f1;
-      --user-bubble: linear-gradient(135deg, #6366f1, #8b5cf6);
-      --text-main: #111827;
-      --text-soft: #6b7280;
-      --input-bg: #ffffff;
-      --header-bg: linear-gradient(135deg, #6366f1, #8b5cf6);
-      --hint-bg: #e5e7eb;
-      --panel-bg: #f3f4f6;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
     body {
-      background: var(--bg-grad);
-      min-height: 100vh;
+      background: radial-gradient(circle at top, var(--bg2), var(--bg));
+      height: 100vh;
       display: flex;
-      align-items: center;
       justify-content: center;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        sans-serif;
+      align-items: center;
+      margin: 0;
+      font-family: system-ui, sans-serif;
       color: var(--text-main);
+      overflow: hidden;
     }
-
     .app {
       width: 100%;
       max-width: 540px;
       height: 100vh;
-      max-height: 820px;
-      background: var(--card-bg);
-      border-radius: 22px;
+      background: var(--bg2);
       border: 1px solid var(--border);
-      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.75);
+      border-radius: 14px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
-
     .header {
-      padding: 12px 16px;
+      padding: 10px 16px;
+      background: #111827cc;
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: var(--header-bg);
     }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
     .logo {
-      width: 32px;
-      height: 32px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 30%, #f9fafb, #8b5cf6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 15px;
-      color: #0f172a;
+      font-weight: 900;
+      letter-spacing: 0.2rem;
     }
-
-    .titles h1 {
-      font-size: 16px;
-      letter-spacing: 0.14em;
-    }
-
-    .titles span {
-      font-size: 11px;
-      color: var(--text-soft);
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .pill {
-      font-size: 11px;
-      background: rgba(15, 23, 42, 0.8);
-      border-radius: 999px;
-      padding: 4px 8px;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      color: #e5e7eb;
-    }
-
-    body.light .pill {
-      background: rgba(15, 23, 42, 0.12);
-      color: #111827;
-    }
-
-    .pill-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: #22c55e;
-    }
-
-    .theme-btn {
-      width: 30px;
-      height: 30px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.85);
-      color: #e5e7eb;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-    }
-
-    body.light .theme-btn {
-      background: #f9fafb;
-      color: #111827;
-      border-color: rgba(148, 163, 184, 0.7);
-    }
-
-    .hint {
-      padding: 6px 14px 8px;
-      border-bottom: 1px solid var(--border);
-      font-size: 11px;
-      color: var(--text-soft);
-      background: var(--hint-bg);
-    }
-
-    .hint span {
-      background: rgba(55, 65, 81, 0.8);
-      border-radius: 999px;
-      padding: 2px 8px;
+    .online {
       font-size: 10px;
-      margin-right: 4px;
-      color: #e5e7eb;
-    }
-
-    body.light .hint span {
-      background: rgba(55, 65, 81, 0.1);
-      color: #111827;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: #22c55e33;
+      color: #22c55e;
+      border: 1px solid #22c55e55;
     }
 
     .chat {
       flex: 1;
-      padding: 10px 10px 12px;
       overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      background: radial-gradient(circle at top, rgba(148, 163, 184, 0.18), transparent 55%);
+      padding: 14px;
+      scroll-behavior: smooth;
     }
-
     .chat::-webkit-scrollbar {
       width: 6px;
     }
     .chat::-webkit-scrollbar-thumb {
-      background: rgba(148, 163, 184, 0.8);
-      border-radius: 999px;
+      background: #334155;
+      border-radius: 10px;
     }
 
     .msg-row {
-      display: flex;
-      flex-direction: column;
-      max-width: 78%;
+      max-width: 75%;
+      margin-bottom: 12px;
+      animation: fadeIn .3s ease;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(6px);}
+      to {opacity: 1; transform: translateY(0);}
     }
 
     .msg-row.user {
       align-self: flex-end;
+      text-align: right;
     }
-
     .msg-row.bot {
       align-self: flex-start;
     }
 
     .bubble {
-      padding: 9px 12px;
+      background: #1f2937;
+      padding: 10px 12px;
       border-radius: 14px;
-      background: transparent;
-      color: var(--text-main);
       font-size: 14px;
-      line-height: 1.35;
       white-space: pre-line;
+      line-height: 1.35;
     }
 
-    /* sadece kullanıcı balonlu */
     .msg-row.user .bubble {
       background: var(--user-bubble);
-      color: #f9fafb;
-      border-radius: 16px;
-      border: none;
-      border-bottom-right-radius: 4px;
-    }
-
-    /* bot düz metin, balon yok */
-    .msg-row.bot .bubble {
-      padding: 0;
-      border: none;
-      border-radius: 0;
+      color: #fff;
     }
 
     .bubble img {
-      display: block;
-      max-width: 260px;
-      max-height: 260px;
+      max-width: 240px;
       border-radius: 12px;
-      object-fit: cover;
     }
 
     .meta {
+      margin-top: 3px;
       font-size: 10px;
       color: var(--text-soft);
-      margin-top: 3px;
-    }
-
-    .meta.right {
-      text-align: right;
     }
 
     .input-bar {
-      padding: 8px 10px 10px;
+      padding: 10px;
       border-top: 1px solid var(--border);
-      background: var(--panel-bg);
+      background: #111827dd;
       display: flex;
-      align-items: center;
       gap: 6px;
     }
-
-    .icon-btn {
-      width: 34px;
-      height: 34px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.8);
-      color: var(--text-main);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 17px;
-    }
-
-    body.light .icon-btn {
-      background: #ffffff;
-      color: #111827;
-      border-color: rgba(148, 163, 184, 0.7);
-    }
-
     #input {
       flex: 1;
+      background: #1e293b;
+      border: 1px solid #475569;
       border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: var(--input-bg);
+      padding: 8px 12px;
       color: var(--text-main);
-      padding: 8px 11px;
-      font-size: 14px;
       outline: none;
     }
-
-    #input::placeholder {
-      color: rgba(148, 163, 184, 0.9);
+    #input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px #8b5cf633;
     }
-
-    body.light #input {
-      border-color: rgba(148, 163, 184, 0.7);
-    }
-
-    #sendBtn {
-      width: 40px;
-      height: 34px;
+    #send {
+      width: 45px;
       border-radius: 999px;
       border: none;
       background: var(--accent);
-      color: #f9fafb;
+      color: #fff;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       font-size: 17px;
-    }
-
-    @media (max-width: 480px) {
-      .app {
-        max-height: 100vh;
-        border-radius: 0;
-      }
     }
   </style>
 </head>
 
 <body>
   <div class="app">
-    <header class="header">
-      <div class="brand">
-        <div class="logo">Ø</div>
-        <div class="titles">
-          <h1>MØR•AI</h1>
-          <span>TR bot · wiki + görsel</span>
-        </div>
-      </div>
-      <div class="header-right">
-        <div class="pill">
-          <span class="pill-dot"></span>
-          çevrimiçi
-        </div>
-        <button class="theme-btn" id="themeBtn">🌙</button>
-      </div>
-    </header>
-
-    <div class="hint">
-      <span>örnek</span>
-      “Boz ayı nedir?” · “Bana kedi resmi gönder” · “İstanbul”
+    <div class="header">
+      <div class="logo">MØR•AI</div>
+      <span class="online">çevrimiçi</span>
     </div>
 
     <div class="chat" id="chat">
       <div class="msg-row bot">
         <div class="bubble">
 Hoş geldin 💜
-Ben tarayıcı içinde çalışan küçük bir MØR•AI’yim.
+Ben MØR•AI: tarayıcı içinde çalışan yapay zekayım.
+Wikipedia’dan bilgi getiririm. Görsel de gösterebilirim.
 
-• Metin yaz → Vikipedi’den özet bulmaya çalışırım  
-• “bana kedi resmi gönder” → internetten görsel çekerim  
-• 📷 tuşuyla → kendi fotoğrafını gönderebilirsin (sadece gösteririm)
-
-Bilmediğim konuda “bulamadım, sallamıyorum” derim; uydurma yok.
+Bana şunlar gibi yaz:
+• “Boz ayı nedir?”
+• “Bana kedi resmi gönder”
+• “İstanbul”
         </div>
         <div class="meta">şimdi</div>
       </div>
     </div>
 
     <div class="input-bar">
-      <input type="file" id="fileInput" accept="image/*" style="display:none" />
-      <button class="icon-btn" id="fileBtn">📷</button>
-      <input id="input" type="text" placeholder="Bir şey yaz..." />
-      <button id="sendBtn">➡️</button>
+      <input type="text" id="input" placeholder="Bir şey yaz..." />
+      <button id="send">➡️</button>
     </div>
   </div>
 
   <script>
     const chatEl = document.getElementById("chat");
     const inputEl = document.getElementById("input");
-    const sendBtn = document.getElementById("sendBtn");
-    const fileBtn = document.getElementById("fileBtn");
-    const fileInput = document.getElementById("fileInput");
-    const themeBtn = document.getElementById("themeBtn");
-
-    // Tema switch
-    let dark = true;
-    themeBtn.addEventListener("click", () => {
-      dark = !dark;
-      document.body.classList.toggle("light", !dark);
-      themeBtn.textContent = dark ? "🌙" : "☀️";
-    });
+    const sendBtn = document.getElementById("send");
 
     function nowTime() {
       const d = new Date();
-      return (
-        String(d.getHours()).padStart(2, "0") +
-        ":" +
-        String(d.getMinutes()).padStart(2, "0")
-      );
+      return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
     }
 
-    function addMessage({ text = "", isUser = false, imageUrl = null }) {
+    function addMessage({text="", isUser=false, imageUrl=null}) {
       const row = document.createElement("div");
       row.className = "msg-row " + (isUser ? "user" : "bot");
 
@@ -406,23 +196,12 @@ Bilmediğim konuda “bulamadım, sallamıyorum” derim; uydurma yok.
       if (imageUrl) {
         const img = document.createElement("img");
         img.src = imageUrl;
-        img.alt = "görsel";
         bubble.appendChild(img);
       }
-
-      if (text) {
-        if (imageUrl) {
-          const p = document.createElement("div");
-          p.style.marginTop = "6px";
-          p.textContent = text;
-          bubble.appendChild(p);
-        } else {
-          bubble.textContent = text;
-        }
-      }
+      if (text) bubble.appendChild(document.createTextNode(text));
 
       const meta = document.createElement("div");
-      meta.className = "meta" + (isUser ? " right" : "");
+      meta.className = "meta";
       meta.textContent = nowTime();
 
       row.appendChild(bubble);
@@ -431,279 +210,84 @@ Bilmediğim konuda “bulamadım, sallamıyorum” derim; uydurma yok.
       chatEl.scrollTop = chatEl.scrollHeight;
     }
 
-    // ❗ Ton algılama – çok kişilikli sistem
     function detectTone(text) {
-      const lower = text.toLowerCase();
-
-      const firmWords = [
-        "olmuyo",
-        "olmuyor",
-        "çalışmıyo",
-        "çalışmıyor",
-        "calismiyo",
-        "calismiyor",
-        "sinir",
-        "delir",
-        "hata",
-        "bug",
-        "yanlış",
-        "yanlis",
-        "bozuk",
-        "saçma",
-        "sacma"
-      ];
-      if (firmWords.some((w) => lower.includes(w))) return "firm";
-
-      const streetWords = [
-        "reis",
-        "kanka",
-        "aga",
-        "ağa",
-        "kardes",
-        "kardeş",
-        "bro",
-        "abi",
-        "abii",
-        "dayı",
-        "dayi",
-        "la ",
-        " lan",
-        "oğlum",
-        "oglum",
-        "kral"
-      ];
-      if (streetWords.some((w) => lower.includes(w))) return "street";
-
-      const spiritualWords = [
-        "allah",
-        "iman",
-        "kalp",
-        "gönül",
-        "gonul",
-        "dua",
-        "teslimiyet",
-        "sabır",
-        "sabir",
-        "namaz",
-        "rab",
-        "ahiret",
-        "tevbe",
-        "tefekkür",
-        "tefekkur"
-      ];
-      if (spiritualWords.some((w) => lower.includes(w))) return "spiritual";
-
-      const seriousWords = [
-        "nedir",
-        "kimdir",
-        "tarih",
-        "tarihi",
-        "kaynak",
-        "bilgi",
-        "açıkla",
-        "acikla",
-        "detay",
-        "tanım",
-        "tanim",
-        "özeti",
-        "ozeti",
-        "özet",
-        "ozet",
-        "analiz"
-      ];
-      if (seriousWords.some((w) => lower.includes(w))) return "serious";
-
+      const t = text.toLowerCase();
+      if (t.includes("reis") || t.includes("kanka")) return "street";
+      if (t.includes("nedir") || t.includes("kimdir")) return "serious";
+      if (t.includes("allah") || t.includes("hedef")) return "spiritual";
       return "balanced";
     }
 
-    function makeSearchMessage(tone) {
-      switch (tone) {
+    function searchImageTopic(text) {
+      const t = text.toLowerCase();
+      if (
+        t.includes("resim") ||
+        t.includes("foto") ||
+        t.includes("görsel")
+      ) {
+        return t.replace("bana","").replace("resmi","").replace("resim","").trim() || "nature";
+      }
+      return null;
+    }
+
+    function wrapTone(tone, txt) {
+      switch(tone){
         case "street":
-          return "Bakıyorum reis, sana düzgün bir şey bulmaya çalışıyorum…";
-        case "firm":
-          return "Tamam, bakıyorum. Ne var ne yok net bir özet çıkaracağım.";
-        case "spiritual":
-          return "Bu konuyu kaynaklardan tarıyorum; hem bilgi hem de anlam tarafını düzgün vereyim istiyorum…";
+          return "Reis, sana şöyle bir özet buldum:\n\n" + txt;
         case "serious":
-          return "Sorunu Vikipedi ve benzeri kaynaklarda arıyorum, sana özetini getireceğim…";
+          return "İşte güvenilir bir özet:\n\n" + txt;
+        case "spiritual":
+          return "Kaynaklarda böyle anlatılıyor:\n\n" + txt;
         default:
-          return "Sorunu Vikipedi'de arıyorum, uygun bir özet bulmaya çalışıyorum…";
+          return txt;
       }
     }
 
-    function makeNotFoundMessage(tone) {
-      switch (tone) {
-        case "street":
-          return "Reis bu konuda doğru düzgün kaynak bulamadım. Sallamak istemiyorum, soruyu biraz değiştirelim mi? 😅";
-        case "firm":
-          return "Buna dair güvenilir bir şey bulamadım. Rastgele bir şey yazıp seni yanlış yönlendirmek istemiyorum.";
-        case "spiritual":
-          return "Bu başlıkta net bir kaynak bulamadım. Uydurup kalbini karıştırmak istemem; biraz daha açabilirsen beraber bakarız inşallah. 🌿";
-        case "serious":
-          return "Bu konuda güvenilir bir özet bulamadım. Uydurmak istemiyorum; istersen daha spesifik veya farklı bir ifade deneyebilirsin.";
-        default:
-          return "Bu konuda anlamlı bir kaynak bulamadım. Uydurmak istemiyorum 😇\nSoruyu biraz daha farklı veya ayrıntılı sorabilirsin.";
-      }
-    }
-
-    function wrapWikiAnswer(tone, wikiText) {
-      switch (tone) {
-        case "street":
-          return "Reis, sana şöyle bir özet buldum:\n\n" + wikiText;
-        case "firm":
-          return "Bulabildiğim güvenilir özet şöyle:\n\n" + wikiText;
-        case "spiritual":
-          return "Kaynaklarda bu konu kısaca şöyle anlatılıyor:\n\n" + wikiText;
-        case "serious":
-          return "İlgili kaynaklardan derlenmiş kısa bir özet:\n\n" + wikiText;
-        default:
-          return wikiText;
-      }
-    }
-
-    function detectImageTopic(text) {
-      const lower = text.toLowerCase();
-      const hasImageWord =
-        lower.includes("resim") ||
-        lower.includes("resmi") ||
-        lower.includes("foto") ||
-        lower.includes("fotoğraf") ||
-        lower.includes("fotograf") ||
-        lower.includes("görsel") ||
-        lower.includes("gorsel");
-
-      if (!hasImageWord) return null;
-
-      const cleaned = lower
-        .replace("bana", "")
-        .replace("resmi", "")
-        .replace("resim", "")
-        .replace("fotoğrafını", "")
-        .replace("fotoğraf", "")
-        .replace("fotograf", "")
-        .replace("görselini", "")
-        .replace("görsel", "")
-        .trim();
-
-      return cleaned || "nature";
-    }
-
-    function normalizeWikiQuery(text) {
-      let t = text.toLowerCase();
-      t = t.replace(/\?/g, " ");
-      t = t.replace(/ nedir/g, " ");
-      t = t.replace(/ kimdir/g, " ");
-      t = t.replace(/ hakkında bilgi ver/g, " ");
-      t = t.replace(/bana /g, " ");
-      t = t.replace(/\s+/g, " ").trim();
-      return t || text.trim();
-    }
-
-    async function fetchWikiSummary(query) {
-      const q = normalizeWikiQuery(query);
-      const url =
-        "https://tr.wikipedia.org/api/rest_v1/page/summary/" +
-        encodeURIComponent(q);
-
+    async function fetchWiki(q) {
+      const key = q.toLowerCase().replace(" nedir","").trim();
+      const url = "https://tr.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(key);
       try {
-        const res = await fetch(url);
-        if (!res.ok) return null;
-        const data = await res.json();
-        if (!data.extract) return null;
-
-        let text = data.extract;
-        if (text.length > 900) {
-          text = text.slice(0, 880) + "...";
-        }
-        text += "\n\nKaynak: Vikipedi";
-        return text;
-      } catch (e) {
-        console.error("Wiki hatası:", e);
+        const r = await fetch(url);
+        if(!r.ok) return null;
+        const d = await r.json();
+        return d.extract || null;
+      } catch(e) {
         return null;
       }
     }
 
-    function searchImage(topic) {
-      const url =
-        "https://images.weserv.nl/?url=source.unsplash.com/600x400/?" +
-        encodeURIComponent(topic);
+    async function handleMessage(text) {
+      const tone = detectTone(text);
 
-      addMessage({
-        text: `"${topic}" için bir görsel gösteriyorum 📷 (kaynak: Unsplash)`,
-        isUser: false,
-        imageUrl: url
-      });
-    }
-
-    async function handleBotReply(userText) {
-      const tone = detectTone(userText);
-
-      // Görsel isteği varsa önce ona bak
-      const topic = detectImageTopic(userText);
-      if (topic) {
-        searchImage(topic);
+      // Görsel isteği
+      const topic = searchImageTopic(text);
+      if(topic){
+        const imgUrl = "https://images.weserv.nl/?url=source.unsplash.com/600x400/?" + encodeURIComponent(topic);
+        addMessage({text:`"${topic}" görseli 📷`, imageUrl:imgUrl, isUser:false});
         return;
       }
 
-      // Araştırma mesajı (tona göre)
-      addMessage({
-        text: makeSearchMessage(tone),
-        isUser: false
-      });
+      addMessage({text:"Bakıyorum…", isUser:false});
+      const info = await fetchWiki(text);
 
-      const wikiText = await fetchWikiSummary(userText);
-      if (wikiText) {
-        const wrapped = wrapWikiAnswer(tone, wikiText);
-        addMessage({ text: wrapped, isUser: false });
+      if(info){
+        addMessage({text: wrapTone(tone, info), isUser:false});
       } else {
-        addMessage({
-          text: makeNotFoundMessage(tone),
-          isUser: false
-        });
+        addMessage({text:"Bu konuda güvenilir bir kaynak bulamadım.", isUser:false});
       }
     }
 
-    function sendTextMessage() {
-      const text = inputEl.value.trim();
-      if (!text) return;
-      addMessage({ text, isUser: true });
-      inputEl.value = "";
-      inputEl.focus();
-      handleBotReply(text);
+    function send(){
+      const val = inputEl.value.trim();
+      if(!val) return;
+      addMessage({text:val, isUser:true});
+      inputEl.value="";
+      handleMessage(val);
     }
 
-    sendBtn.addEventListener("click", sendTextMessage);
-    inputEl.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        sendTextMessage();
-      }
-    });
-
-    fileBtn.addEventListener("click", () => {
-      fileInput.value = "";
-      fileInput.click();
-    });
-
-    fileInput.addEventListener("change", () => {
-      const file = fileInput.files[0];
-      if (!file) return;
-      const url = URL.createObjectURL(file);
-
-      addMessage({
-        imageUrl: url,
-        isUser: true,
-        text: ""
-      });
-
-      setTimeout(() => {
-        addMessage({
-          text: "Fotoğrafını gördüm 📷 İstersen biraz da hikâyesini anlat.",
-          isUser: false
-        });
-      }, 400);
-
-      setTimeout(() => URL.revokeObjectURL(url), 15000);
+    sendBtn.addEventListener("click", send);
+    inputEl.addEventListener("keydown", e=>{
+      if(e.key==="Enter") send();
     });
   </script>
 </body>
