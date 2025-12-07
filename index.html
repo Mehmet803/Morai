@@ -1,483 +1,369 @@
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <title>MØR•AI v6.0 (Reis Edition)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
+  <title>MorAI v6</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    :root {
-      /* Light theme defaults */
-      --bg: #f9fafb;
-      --bg-alt: #ffffff;
-      --text: #0f172a;
-      --soft: #6b7280;
-      --border: #d1d5db;
-      --bot-bubble: #e5e7eb;
-      --user-bubble: linear-gradient(135deg,#6366f1,#a855f7);
-      --accent: #7c3aed;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
-
-    [data-theme="dark"] {
-      --bg: #020617;
-      --bg-alt: #020617;
-      --text: #e5e7eb;
-      --soft: #9ca3af;
-      --border: #1e293b;
-      --bot-bubble: #0f172a;
-      --user-bubble: linear-gradient(135deg,#6366f1,#a855f7);
-      --accent: #8b5cf6;
-    }
-
-    * { box-sizing:border-box; }
 
     body {
-      margin:0;
-      height:100vh;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      background:var(--bg);
-      font-family:system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color:var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0b1020;
+      color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
 
     .app {
-      width:100%;
-      max-width:540px;
-      height:100vh;
-      max-height:840px;
-      display:flex;
-      flex-direction:column;
-      background:var(--bg-alt);
-      border:1px solid var(--border);
-      border-radius:18px;
-      overflow:hidden;
+      width: 100%;
+      max-width: 900px;
+      height: 90vh;
+      background: radial-gradient(circle at top, #202640, #080b16);
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
 
-    header {
-      padding:10px 14px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      border-bottom:1px solid var(--border);
-      background:var(--bg-alt);
+    .header {
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.02), transparent);
+    }
+
+    .title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
     }
 
     .title {
-      font-weight:700;
-      font-size:15px;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: #f7f7ff;
     }
 
     .subtitle {
-      font-size:11px;
-      color:var(--soft);
+      font-size: 11px;
+      opacity: 0.8;
+      color: #a8b0ff;
     }
 
-    .left-head {
-      display:flex;
-      flex-direction:column;
+    .badge {
+      font-size: 10px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(120, 207, 255, 0.5);
+      color: #78cfff;
+      background: rgba(120, 207, 255, 0.08);
     }
 
-    .theme-toggle {
-      font-size:12px;
-      display:flex;
-      align-items:center;
-      gap:6px;
-      cursor:pointer;
-      color:var(--soft);
+    .chat-area {
+      flex: 1;
+      padding: 16px 14px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
     }
 
-    .theme-toggle input {
-      cursor:pointer;
+    .chat-area::-webkit-scrollbar {
+      width: 6px;
     }
 
-    .chat {
-      flex:1;
-      padding:10px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      overflow-y:auto;
-      background:radial-gradient(circle at top,rgba(148,163,184,0.15),transparent 60%);
+    .chat-area::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
     }
 
-    .chat::-webkit-scrollbar { width:6px; }
-    .chat::-webkit-scrollbar-thumb {
-      background:rgba(148,163,184,0.6);
-      border-radius:999px;
+    .message-row {
+      display: flex;
+      margin-bottom: 10px;
     }
 
-    .msg-row {
-      max-width:78%;
-      display:flex;
-      flex-direction:column;
+    .message-row.user {
+      justify-content: flex-end;
     }
 
-    .msg-row.user { align-self:flex-end; text-align:right; }
-    .msg-row.bot  { align-self:flex-start; text-align:left; }
+    .message-row.bot {
+      justify-content: flex-start;
+    }
 
     .bubble {
-      font-size:14px;
-      line-height:1.35;
-      white-space:pre-line;
+      max-width: 75%;
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.4;
+      position: relative;
+      word-wrap: break-word;
+      white-space: pre-wrap;
     }
 
-    .msg-row.user .bubble {
-      background:var(--user-bubble);
-      color:#f9fafb;
-      padding:8px 11px;
-      border-radius:14px;
-      border-bottom-right-radius:4px;
+    .message-row.user .bubble {
+      background: linear-gradient(135deg, #4b8bff, #9d6bff);
+      color: #fff;
+      border-bottom-right-radius: 4px;
     }
 
-    .msg-row.bot .bubble {
-      background:var(--bot-bubble);
-      color:var(--text);
-      padding:8px 11px;
-      border-radius:14px;
-      border-bottom-left-radius:4px;
+    .message-row.bot .bubble {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: #e6e6ff;
+      border-bottom-left-radius: 4px;
     }
 
     .bubble img {
-      max-width:220px;
-      border-radius:12px;
-      margin-bottom:4px;
-      display:block;
+      max-width: 100%;
+      border-radius: 12px;
+      display: block;
     }
 
-    .meta {
-      font-size:10px;
-      color:var(--soft);
-      margin-top:3px;
+    .time {
+      font-size: 10px;
+      opacity: 0.6;
+      margin-top: 3px;
+      text-align: right;
     }
 
-    .meta.right { text-align:right; }
+    .input-area {
+      padding: 10px 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      gap: 8px;
+      background: rgba(5, 8, 18, 0.95);
+      backdrop-filter: blur(10px);
+    }
+
+    .input-area input[type="text"] {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 10px 14px;
+      color: #f5f5ff;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .input-area input[type="text"]::placeholder {
+      color: rgba(200, 204, 255, 0.6);
+    }
+
+    .send-btn {
+      border-radius: 999px;
+      border: none;
+      padding: 0 18px;
+      background: linear-gradient(135deg, #ff7a7a, #ffb36b);
+      color: #1b102a;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      white-space: nowrap;
+    }
+
+    .send-btn:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    }
 
     .typing {
-      font-size:11px;
-      color:var(--soft);
-      margin-left:4px;
+      font-size: 12px;
+      opacity: 0.7;
+      margin-top: 4px;
     }
 
-    .input-bar {
-      padding:8px 10px 10px;
-      border-top:1px solid var(--border);
-      display:flex;
-      align-items:center;
-      gap:6px;
-      background:var(--bg-alt);
+    .typing span {
+      display: inline-block;
+      width: 4px;
+      height: 4px;
+      margin-right: 3px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      animation: blink 1s infinite ease-in-out;
     }
 
-    #fileInput { display:none; }
-
-    .icon-btn {
-      width:36px;
-      height:34px;
-      border-radius:999px;
-      border:1px solid var(--border);
-      background:var(--bg);
-      color:var(--text);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      cursor:pointer;
-      font-size:16px;
+    .typing span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    .typing span:nth-child(3) {
+      animation-delay: 0.4s;
     }
 
-    #input {
-      flex:1;
-      border-radius:999px;
-      border:1px solid var(--border);
-      padding:8px 11px;
-      font-size:14px;
-      background:var(--bg);
-      color:var(--text);
-      outline:none;
+    @keyframes blink {
+      0%, 80%, 100% {
+        opacity: 0.2;
+        transform: translateY(0);
+      }
+      40% {
+        opacity: 1;
+        transform: translateY(-2px);
+      }
     }
 
-    #input::placeholder { color:var(--soft); }
-
-    #input:focus {
-      border-color:var(--accent);
-      box-shadow:0 0 0 2px rgba(129,140,248,0.35);
-    }
-
-    #sendBtn {
-      width:42px;
-      height:34px;
-      border-radius:999px;
-      border:none;
-      background:var(--accent);
-      color:#f9fafb;
-      cursor:pointer;
-      font-size:17px;
-    }
-
-    @media (max-width:600px){
-      .app { border-radius:0; max-height:100vh; }
+    @media (max-width: 600px) {
+      .app {
+        height: 100vh;
+        border-radius: 0;
+      }
     }
   </style>
 </head>
-
 <body>
   <div class="app">
-    <header>
-      <div class="left-head">
-        <span class="title">MØR•AI v6.0</span>
-        <span class="subtitle">TR bot · wiki + görsel · Reis modu</span>
+    <div class="header">
+      <div class="title-group">
+        <div class="title">MORAI</div>
+        <div class="subtitle">GPT destekli sohbet asistanı</div>
       </div>
-      <label class="theme-toggle">
-        <input type="checkbox" id="themeCheckbox">
-        <span id="themeLabel">☾ Karanlık</span>
-      </label>
-    </header>
+      <div class="badge">v6 • live</div>
+    </div>
 
-    <div class="chat" id="chat"></div>
+    <div class="chat-area" id="chat"></div>
 
-    <div class="input-bar">
-      <input type="file" id="fileInput" accept="image/*" />
-      <button class="icon-btn" id="fileBtn">📎</button>
-      <input id="input" placeholder="Bir şey yaz reis…  (/yardım)" />
-      <button id="sendBtn">➡️</button>
+    <div class="input-area">
+      <input
+        type="text"
+        id="yazi"
+        placeholder="Bir şey yaz... /yardım yazıp komutları görebilirsin"
+      />
+      <button class="send-btn">Gönder</button>
     </div>
   </div>
 
-<script>
-// ======================
-//  MØR•AI v6 — Frontend
-//  Backend: GPT beyni
-// ======================
+  <script>
+    // ======================
+    //  MØR•AI v6 — Frontend
+    // ======================
 
-// Backend URL (Vercel)
-const MORAI_BACKEND_URL = "https://morai-backend.vercel.app/api/chat";
+    // ⚠️ BACKEND URL'İN BURADA
+    // Eğer Vercel URL'in farklıysa SADECE burayı değiştir
+    const MORAI_BACKEND_URL =
+      "https://morai-backend-ihz5aa52u-mehmets-projects-5ba929d4.vercel.app/api/chat";
 
-// DOM elemanlarını yakala (isimler farklıysa da çoğunu otomatik bulur)
-const chatEl =
-  document.getElementById("chat") || document.querySelector(".chat-area");
-const inputEl =
-  document.getElementById("userInput") ||
-  document.getElementById("yazi") ||
-  document.querySelector("input[type='text']");
-const sendBtn =
-  document.getElementById("sendBtn") ||
-  document.querySelector(".send-btn") ||
-  document.querySelector("[data-send]");
+    const chatEl = document.getElementById("chat");
+    const inputEl = document.getElementById("yazi");
+    const sendBtn = document.querySelector(".send-btn");
 
-const fileInput = document.getElementById("fileInput");
-const themeBtn = document.getElementById("themeBtn");
-const micBtn =
-  document.getElementById("micBtn") || document.querySelector(".mic-btn");
+    function addMessage(text, isUser = false) {
+      const row = document.createElement("div");
+      row.className = "message-row " + (isUser ? "user" : "bot");
 
-// Küçük güvenlik: kritik elemanlar yoksa hata verme
-if (!chatEl || !inputEl || !sendBtn) {
-  console.error("MØR•AI: chatEl / inputEl / sendBtn bulunamadı.");
-}
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.textContent = text;
 
-// Mesaj balonu ekleme
-function addMessage({ text, isUser = false, isImage = false }) {
-  if (!chatEl) return;
+      const time = document.createElement("div");
+      time.className = "time";
+      time.textContent = new Date().toLocaleTimeString().slice(0, 5);
 
-  const wrapper = document.createElement("div");
-  wrapper.className = "message " + (isUser ? "user" : "bot");
-
-  const bubble = document.createElement("div");
-  bubble.className = "bubble";
-
-  if (isImage) {
-    const img = document.createElement("img");
-    img.src = text;
-    img.alt = "Gönderilen görsel";
-    bubble.appendChild(img);
-  } else {
-    bubble.textContent = text;
-  }
-
-  const time = document.createElement("span");
-  time.className = "time";
-  time.textContent = new Date().toLocaleTimeString().slice(0, 5);
-
-  wrapper.appendChild(bubble);
-  wrapper.appendChild(time);
-  chatEl.appendChild(wrapper);
-
-  // Her mesajdan sonra alta kaydır
-  chatEl.scrollTop = chatEl.scrollHeight;
-}
-
-// Backend'e istek atan fonksiyon
-async function askMorAI(message) {
-  try {
-    const res = await fetch(MORAI_BACKEND_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message }),
-    });
-
-    if (!res.ok) {
-      console.error("Backend hata:", res.status);
-      return "Reis, beynin tarafında bir sorun var gibi. Birazdan tekrar deneyelim.";
+      bubble.appendChild(time);
+      row.appendChild(bubble);
+      chatEl.appendChild(row);
+      chatEl.scrollTop = chatEl.scrollHeight;
     }
 
-    const data = await res.json();
-    return data.reply || "Reis, düzgün bir cevap alamadım.";
-  } catch (e) {
-    console.error("İstek hatası:", e);
-    return "Reis, bağlantıda bir sıkıntı var gibi (internet ya da sunucu).";
-  }
-}
+    function addTyping() {
+      const row = document.createElement("div");
+      row.className = "message-row bot typing-row";
 
-// Basit komutlar: /yardım, /temizle, /versiyon
-function handleCommand(cmd) {
-  if (cmd === "/yardım") {
-    addMessage({
-      isUser: false,
-      text:
-        "Komutlar:\n" +
-        "• /yardım → bu liste\n" +
-        "• /temizle → sohbeti siler\n" +
-        "• /versiyon → sürümü söyler",
-    });
-    return true;
-  }
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
 
-  if (cmd === "/versiyon") {
-    addMessage({
-      isUser: false,
-      text: "MØR•AI v6.0 — GPT destekli, sallama yok reis. 💜",
-    });
-    return true;
-  }
+      const t = document.createElement("div");
+      t.className = "typing";
+      t.innerHTML = '<span></span><span></span><span></span>';
 
-  if (cmd === "/temizle") {
-    if (chatEl) chatEl.innerHTML = "";
-    addMessage({ isUser: false, text: "Sohbeti sıfırladım reis. ✅" });
-    return true;
-  }
+      bubble.appendChild(t);
+      row.appendChild(bubble);
+      chatEl.appendChild(row);
+      chatEl.scrollTop = chatEl.scrollHeight;
 
-  return false;
-}
-
-// Metinden görsel isteği yakalama (\"bana ... resmi gönder\" gibi)
-function detectImageTopic(text) {
-  text = text.toLowerCase();
-  if (text.includes("resmi gönder") || text.includes("fotoğraf gönder")) {
-    // "bana bir aslan resmi gönder" → "aslan"
-    const cleaned = text
-      .replace("bana", "")
-      .replace("bir", "")
-      .replace("resmi gönder", "")
-      .replace("fotoğraf gönder", "")
-      .trim();
-    return cleaned || null;
-  }
-  return null;
-}
-
-// Unsplash üzerinden rastgele görsel
-function showImageFromUnsplash(topic) {
-  const url = `https://source.unsplash.com/600x400/?${encodeURIComponent(
-    topic
-  )}`;
-  addMessage({
-    isUser: false,
-    text: `“${topic}” için bir görsel gösteriyorum 📷`,
-  });
-  addMessage({ isUser: false, text: url, isImage: true });
-}
-
-// Kullanıcı mesajını işleme
-async function handleUserMessage(rawText) {
-  const text = rawText.trim();
-  if (!text) return;
-
-  // Önce kullanıcı balonu
-  addMessage({ text, isUser: true });
-
-  // Komutsa backend'e gitme
-  if (handleCommand(text)) return;
-
-  // Görsel isteği mi?
-  const topic = detectImageTopic(text);
-  if (topic) {
-    showImageFromUnsplash(topic);
-    return;
-  }
-
-  // Normal soru → backend'e sor
-  addMessage({
-    isUser: false,
-    text: "Bakıyorum reis, beyne soruyorum...",
-  });
-
-  const reply = await askMorAI(text);
-  addMessage({ isUser: false, text: reply });
-}
-
-// Gönderme fonksiyonu
-function sendCurrentInput() {
-  if (!inputEl) return;
-  const value = inputEl.value;
-  inputEl.value = "";
-  handleUserMessage(value);
-}
-
-// Eventler
-if (sendBtn) {
-  sendBtn.addEventListener("click", () => {
-    sendCurrentInput();
-  });
-}
-
-if (inputEl) {
-  inputEl.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendCurrentInput();
+      return row;
     }
-  });
-}
 
-// Tema butonu varsa basit dark/light toggle
-if (themeBtn) {
-  themeBtn.addEventListener("click", () => {
-    document.body.classList.toggle("dark");
-  });
-}
+    function removeTyping(row) {
+      if (row && row.parentNode) {
+        row.parentNode.removeChild(row);
+      }
+    }
 
-// Dosya yükleme sadece gösterim için
-if (fileInput) {
-  fileInput.addEventListener("change", () => {
-    const file = fileInput.files?.[0];
-    if (!file) return;
-    addMessage({
-      isUser: true,
-      text: `📎 ${file.name} yükledin (şimdilik sadece gösteriyorum).`,
-    });
-  });
-}
+    async function askMorAI(message) {
+      try {
+        const res = await fetch(MORAI_BACKEND_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message })
+        });
 
-// Mic butonu varsa "yakında" mesajı
-if (micBtn) {
-  micBtn.addEventListener("click", () => {
-    addMessage({
-      isUser: false,
-      text: "Sesli konuşma özelliği yakında reis 🎙️",
-    });
-  });
-}
+        if (!res.ok) {
+          console.error("Backend hata:", res.status);
+          return "Reis, beynin tarafında bir sorun var gibi. Birazdan tekrar deneriz.";
+        }
 
-// Sayfa açılınca karşılama mesajı
-addMessage({
-  isUser: false,
-  text:
-    "Selam reis 👑\nBen MØR•AI v6.0.\n\n" +
-    "• GPT beyni ile konuşurum\n" +
-    "• \"bana aslan resmi gönder\" dersen görsel gösteririm\n" +
-    "• /yardım → komutları listeler\n" +
-    "• /temizle → sohbeti sıfırlar\n" +
-    "• /versiyon → sürümü söyler\n\n" +
-    "Hazırsan başlayalım 💜",
-});
-</script>
+        const data = await res.json();
+        return data.reply || "Reis, düzgün bir cevap alamadım.";
+      } catch (e) {
+        console.error("İstek hatası:", e);
+        return "Reis, bağlantıda bir sıkıntı var gibi (internet / sunucu).";
+      }
+    }
+
+    async function sendMessage() {
+      const text = inputEl.value.trim();
+      if (!text) return;
+      inputEl.value = "";
+
+      // Kullanıcı mesajını göster
+      addMessage(text, true);
+
+      // Yazıyor efekti
+      const typingRow = addTyping();
+
+      // Backend'e sor
+      const reply = await askMorAI(text);
+
+      // Yazıyor efektini kaldır
+      removeTyping(typingRow);
+
+      // Bot cevabını göster
+      addMessage(reply, false);
+    }
+
+    if (sendBtn) {
+      sendBtn.addEventListener("click", sendMessage);
+    }
+
+    if (inputEl) {
+      inputEl.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+    }
+
+    // Açılış mesajı
+    addMessage(
+      "Selam reis 👑\nBen MØR•AI v6.\n\nArtık gerçek GPT beynine bağlıyım.\n" +
+      "• Normal sorular sorabilirsin\n" +
+      "• Sallama yok, emin olmadığım yerde 'bilmiyorum' derim.\n\nHazırsan başlayalım 💜",
+      false
+    );
+  </script>
+</body>
+</html>
