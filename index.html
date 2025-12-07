@@ -126,12 +126,6 @@
       border-bottom-left-radius: 4px;
     }
 
-    .bubble img {
-      max-width: 100%;
-      border-radius: 12px;
-      display: block;
-    }
-
     .time {
       font-size: 10px;
       opacity: 0.6;
@@ -233,7 +227,7 @@
       <div class="badge">v6 • live</div>
     </div>
 
-    <div class="chat-area" id="chat"></div>
+    <div class="chat-area"></div>
 
     <div class="input-area">
       <input
@@ -251,119 +245,126 @@
     // ======================
 
     // ⚠️ BACKEND URL'İN BURADA
-    // Eğer Vercel URL'in farklıysa SADECE burayı değiştir
+    // Vercel URL'in buysa aynen kalsın, farklıysa SADECE burayı değiştir
     const MORAI_BACKEND_URL =
       "https://morai-backend-ihz5aa52u-mehmets-projects-5ba929d4.vercel.app/api/chat";
 
-    const chatEl = document.getElementById("chat");
-    const inputEl = document.getElementById("yazi");
-    const sendBtn = document.querySelector(".send-btn");
+    document.addEventListener("DOMContentLoaded", () => {
+      const chatEl = document.querySelector(".chat-area");
+      const inputEl = document.getElementById("yazi");
+      const sendBtn = document.querySelector(".send-btn");
 
-    function addMessage(text, isUser = false) {
-      const row = document.createElement("div");
-      row.className = "message-row " + (isUser ? "user" : "bot");
+      function addMessage(text, isUser = false) {
+        if (!chatEl) return;
 
-      const bubble = document.createElement("div");
-      bubble.className = "bubble";
-      bubble.textContent = text;
+        const row = document.createElement("div");
+        row.className = "message-row " + (isUser ? "user" : "bot");
 
-      const time = document.createElement("div");
-      time.className = "time";
-      time.textContent = new Date().toLocaleTimeString().slice(0, 5);
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+        bubble.textContent = text;
 
-      bubble.appendChild(time);
-      row.appendChild(bubble);
-      chatEl.appendChild(row);
-      chatEl.scrollTop = chatEl.scrollHeight;
-    }
+        const time = document.createElement("div");
+        time.className = "time";
+        time.textContent = new Date().toLocaleTimeString().slice(0, 5);
 
-    function addTyping() {
-      const row = document.createElement("div");
-      row.className = "message-row bot typing-row";
-
-      const bubble = document.createElement("div");
-      bubble.className = "bubble";
-
-      const t = document.createElement("div");
-      t.className = "typing";
-      t.innerHTML = '<span></span><span></span><span></span>';
-
-      bubble.appendChild(t);
-      row.appendChild(bubble);
-      chatEl.appendChild(row);
-      chatEl.scrollTop = chatEl.scrollHeight;
-
-      return row;
-    }
-
-    function removeTyping(row) {
-      if (row && row.parentNode) {
-        row.parentNode.removeChild(row);
+        bubble.appendChild(time);
+        row.appendChild(bubble);
+        chatEl.appendChild(row);
+        chatEl.scrollTop = chatEl.scrollHeight;
       }
-    }
 
-    async function askMorAI(message) {
-      try {
-        const res = await fetch(MORAI_BACKEND_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message })
+      function addTyping() {
+        if (!chatEl) return null;
+
+        const row = document.createElement("div");
+        row.className = "message-row bot typing-row";
+
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+
+        const t = document.createElement("div");
+        t.className = "typing";
+        t.innerHTML = '<span></span><span></span><span></span>';
+
+        bubble.appendChild(t);
+        row.appendChild(bubble);
+        chatEl.appendChild(row);
+        chatEl.scrollTop = chatEl.scrollHeight;
+
+        return row;
+      }
+
+      function removeTyping(row) {
+        if (row && row.parentNode) {
+          row.parentNode.removeChild(row);
+        }
+      }
+
+      async function askMorAI(message) {
+        try {
+          const res = await fetch(MORAI_BACKEND_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message })
+          });
+
+          if (!res.ok) {
+            console.error("Backend hata:", res.status);
+            return "Reis, beynin tarafında bir sorun var gibi. Birazdan tekrar deneriz.";
+          }
+
+          const data = await res.json();
+          return data.reply || "Reis, düzgün bir cevap alamadım.";
+        } catch (e) {
+          console.error("İstek hatası:", e);
+          return "Reis, bağlantıda bir sıkıntı var gibi (internet / sunucu).";
+        }
+      }
+
+      async function sendMessage() {
+        if (!inputEl) return;
+        const text = inputEl.value.trim();
+        if (!text) return;
+        inputEl.value = "";
+
+        // Kullanıcı mesajını göster
+        addMessage(text, true);
+
+        // Yazıyor efekti
+        const typingRow = addTyping();
+
+        // Backend'e sor
+        const reply = await askMorAI(text);
+
+        // Yazıyor efektini kaldır
+        removeTyping(typingRow);
+
+        // Bot cevabını göster
+        addMessage(reply, false);
+      }
+
+      if (sendBtn) {
+        sendBtn.addEventListener("click", sendMessage);
+      }
+
+      if (inputEl) {
+        inputEl.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+          }
         });
-
-        if (!res.ok) {
-          console.error("Backend hata:", res.status);
-          return "Reis, beynin tarafında bir sorun var gibi. Birazdan tekrar deneriz.";
-        }
-
-        const data = await res.json();
-        return data.reply || "Reis, düzgün bir cevap alamadım.";
-      } catch (e) {
-        console.error("İstek hatası:", e);
-        return "Reis, bağlantıda bir sıkıntı var gibi (internet / sunucu).";
       }
-    }
 
-    async function sendMessage() {
-      const text = inputEl.value.trim();
-      if (!text) return;
-      inputEl.value = "";
-
-      // Kullanıcı mesajını göster
-      addMessage(text, true);
-
-      // Yazıyor efekti
-      const typingRow = addTyping();
-
-      // Backend'e sor
-      const reply = await askMorAI(text);
-
-      // Yazıyor efektini kaldır
-      removeTyping(typingRow);
-
-      // Bot cevabını göster
-      addMessage(reply, false);
-    }
-
-    if (sendBtn) {
-      sendBtn.addEventListener("click", sendMessage);
-    }
-
-    if (inputEl) {
-      inputEl.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-          e.preventDefault();
-          sendMessage();
-        }
-      });
-    }
-
-    // Açılış mesajı
-    addMessage(
-      "Selam reis 👑\nBen MØR•AI v6.\n\nArtık gerçek GPT beynine bağlıyım.\n" +
-      "• Normal sorular sorabilirsin\n" +
-      "• Sallama yok, emin olmadığım yerde 'bilmiyorum' derim.\n\nHazırsan başlayalım 💜",
-      false
-    );
+      // Açılış mesajı
+      addMessage(
+        "Selam reis 👑\nBen MØR•AI v6.\n\nArtık gerçek GPT beynine bağlıyım.\n" +
+        "• Normal sorular sorabilirsin\n" +
+        "• Sallama yok, emin olmadığım yerde 'bilmiyorum' derim.\n\nHazırsan başlayalım 💜",
+        false
+      );
+    });
   </script>
 </body>
 </html>
