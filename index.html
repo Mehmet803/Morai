@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -244,281 +245,239 @@
   </div>
 
 <script>
-  // ---- Tema sistemi ----
-  const htmlEl = document.documentElement;
-  const themeCheckbox = document.getElementById("themeCheckbox");
-  const themeLabel = document.getElementById("themeLabel");
+// ======================
+//  MØR•AI v6 — Frontend
+//  Backend: GPT beyni
+// ======================
 
-  function applyTheme(theme) {
-    htmlEl.setAttribute("data-theme", theme);
-    if (theme === "dark") {
-      themeCheckbox.checked = true;
-      themeLabel.textContent = "☀ Açık";
-    } else {
-      themeCheckbox.checked = false;
-      themeLabel.textContent = "☾ Karanlık";
-    }
-    localStorage.setItem("morai-theme", theme);
+// Backend URL (Vercel)
+const MORAI_BACKEND_URL = "https://morai-backend.vercel.app/api/chat";
+
+// DOM elemanlarını yakala (isimler farklıysa da çoğunu otomatik bulur)
+const chatEl =
+  document.getElementById("chat") || document.querySelector(".chat-area");
+const inputEl =
+  document.getElementById("userInput") ||
+  document.getElementById("yazi") ||
+  document.querySelector("input[type='text']");
+const sendBtn =
+  document.getElementById("sendBtn") ||
+  document.querySelector(".send-btn") ||
+  document.querySelector("[data-send]");
+
+const fileInput = document.getElementById("fileInput");
+const themeBtn = document.getElementById("themeBtn");
+const micBtn =
+  document.getElementById("micBtn") || document.querySelector(".mic-btn");
+
+// Küçük güvenlik: kritik elemanlar yoksa hata verme
+if (!chatEl || !inputEl || !sendBtn) {
+  console.error("MØR•AI: chatEl / inputEl / sendBtn bulunamadı.");
+}
+
+// Mesaj balonu ekleme
+function addMessage({ text, isUser = false, isImage = false }) {
+  if (!chatEl) return;
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "message " + (isUser ? "user" : "bot");
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+
+  if (isImage) {
+    const img = document.createElement("img");
+    img.src = text;
+    img.alt = "Gönderilen görsel";
+    bubble.appendChild(img);
+  } else {
+    bubble.textContent = text;
   }
 
-  // Başlangıç teması
-  const savedTheme = localStorage.getItem("morai-theme") || "dark";
-  applyTheme(savedTheme);
+  const time = document.createElement("span");
+  time.className = "time";
+  time.textContent = new Date().toLocaleTimeString().slice(0, 5);
 
-  themeCheckbox.addEventListener("change", () => {
-    applyTheme(themeCheckbox.checked ? "dark" : "light");
-  });
+  wrapper.appendChild(bubble);
+  wrapper.appendChild(time);
+  chatEl.appendChild(wrapper);
 
-  // ---- Chat elemanları ----
-  const chatEl = document.getElementById("chat");
-  const inputEl = document.getElementById("input");
-  const sendBtn = document.getElementById("sendBtn");
-  const fileBtn = document.getElementById("fileBtn");
-  const fileInput = document.getElementById("fileInput");
+  // Her mesajdan sonra alta kaydır
+  chatEl.scrollTop = chatEl.scrollHeight;
+}
 
-  function nowTime() {
-    const d = new Date();
-    return d.getHours().toString().padStart(2,"0")+":"+
-           d.getMinutes().toString().padStart(2,"0");
-  }
-
-  function addMessage({ text="", isUser=false, imageUrl=null }) {
-    const row = document.createElement("div");
-    row.className = "msg-row " + (isUser ? "user" : "bot");
-
-    const bubble = document.createElement("div");
-    bubble.className = "bubble";
-
-    if (imageUrl) {
-      const img = document.createElement("img");
-      img.src = imageUrl;
-      img.alt = "görsel";
-      bubble.appendChild(img);
-    }
-
-    if (text) {
-      bubble.appendChild(document.createTextNode(text));
-    }
-
-    const meta = document.createElement("div");
-    meta.className = "meta" + (isUser ? " right" : "");
-    meta.textContent = nowTime();
-
-    row.appendChild(bubble);
-    row.appendChild(meta);
-    chatEl.appendChild(row);
-    chatEl.scrollTop = chatEl.scrollHeight;
-  }
-
-  function showTyping(show) {
-    let t = document.getElementById("typing");
-    if (show) {
-      if (!t) {
-        t = document.createElement("div");
-        t.id = "typing";
-        t.className = "typing";
-        t.textContent = "MØR•AI yazıyor…";
-        chatEl.appendChild(t);
-      }
-    } else {
-      if (t) t.remove();
-    }
-    chatEl.scrollTop = chatEl.scrollHeight;
-  }
-
-  // ---- Komutlar ----
-  function handleCommands(text) {
-    if (text === "/yardım") {
-      addMessage({
-        text:
-"Komutlar:\n"+
-"/yardım  → bu liste\n"+
-"/temizle → sohbeti siler\n"+
-"/versiyon → sürümü gösterir\n\n"+
-"Örnek: \"boz ayı nedir?\" · \"bana kedi resmi gönder\"",
-        isUser:false
-      });
-      return true;
-    }
-    if (text === "/temizle") {
-      chatEl.innerHTML = "";
-      welcome();
-      return true;
-    }
-    if (text === "/versiyon") {
-      addMessage({ text:"MØR•AI v6.0 (Reis Edition)", isUser:false });
-      return true;
-    }
-    return false;
-  }
-
-  // ---- Ton algı (eğlence) ----
-  function detectTone(text) {
-    const t = text.toLowerCase();
-    if (t.includes("reis") || t.includes("kral") || t.includes("aga"))
-      return "street";
-    if (t.includes("allah") || t.includes("dua") || t.includes("kalp"))
-      return "spiritual";
-    if (t.includes("nedir") || t.includes("kimdir") || t.includes("tarih"))
-      return "serious";
-    return "normal";
-  }
-
-  // ---- Görsel isteği ----
-  function detectImageTopic(text) {
-    const lower = text.toLowerCase();
-    if (
-      lower.includes("resim") ||
-      lower.includes("foto") ||
-      lower.includes("görsel")
-    ) {
-      let cleaned = lower
-        .replace("bana","")
-        .replace("resim","")
-        .replace("resmi","")
-        .replace("fotoğraf","")
-        .replace("foto","")
-        .replace("görsel","")
-        .trim();
-      if (!cleaned) cleaned = "nature";
-      return cleaned;
-    }
-    return null;
-  }
-
-  function showImage(topic, tone) {
-    const msg = (tone === "street")
-      ? `"${topic}" için bir görsel gösteriyorum reis 📷 (kaynak: Unsplash)`
-      : `"${topic}" için bir görsel gösteriyorum 📷 (kaynak: Unsplash)`;
-    const url = "https://images.weserv.nl/?url=source.unsplash.com/600x400/?"+
-                encodeURIComponent(topic);
-
-    addMessage({ text: msg, isUser:false, imageUrl:url });
-  }
-
-  // ---- Wikipedia özeti ----
-  function normalizeWikiQuery(text) {
-    let t = text.toLowerCase();
-    t = t.replace(/\?/g," ");
-    t = t.replace(" nedir"," ");
-    t = t.replace(" kimdir"," ");
-    t = t.replace(" hakkında bilgi ver"," ");
-    t = t.replace(" bana"," ");
-    t = t.replace(/\s+/g," ").trim();
-    if (!t) t = text.trim();
-    return t;
-  }
-
-  async function fetchWikiSummary(text) {
-    const q = normalizeWikiQuery(text);
-    const url = "https://tr.wikipedia.org/api/rest_v1/page/summary/" +
-                encodeURIComponent(q);
-    try {
-      const res = await fetch(url);
-      if (!res.ok) return null;
-      const data = await res.json();
-      if (!data.extract) return null;
-      let out = data.extract;
-      if (out.length > 900) out = out.slice(0,880)+"...";
-      out += "\n\nKaynak: Vikipedi";
-      return out;
-    } catch {
-      return null;
-    }
-  }
-
-  function wrapAnswer(tone, text) {
-    if (tone === "street")
-      return "Reis, bulabildiğim özet şöyle 👇\n\n"+text;
-    if (tone === "spiritual")
-      return "Kaynaklarda bu konu kısaca şöyle anlatılıyor:\n\n"+text;
-    if (tone === "serious")
-      return "İlgili kaynaklardan kısa bir özet:\n\n"+text;
-    return text;
-  }
-
-  async function handleBotReply(userText) {
-    if (handleCommands(userText)) return;
-
-    const tone = detectTone(userText);
-    const imgTopic = detectImageTopic(userText);
-
-    if (imgTopic) {
-      showTyping(true);
-      setTimeout(() => {
-        showTyping(false);
-        showImage(imgTopic, tone);
-      }, 600);
-      return;
-    }
-
-    const waitText = (tone === "street")
-      ? "Bakıyorum reis, Vikipedi'de ne var ne yok…"
-      : "Bakıyorum, Vikipedi'de ne bulabileceğim…";
-
-    addMessage({ text:waitText, isUser:false });
-
-    showTyping(true);
-    const wikiText = await fetchWikiSummary(userText);
-    showTyping(false);
-
-    if (wikiText) {
-      const wrapped = wrapAnswer(tone, wikiText);
-      addMessage({ text:wrapped, isUser:false });
-    } else {
-      const failText = (tone === "street")
-        ? "Reis bu konuda sağlam bir kaynak bulamadım. Sallamak istemiyorum 😅"
-        : "Bu konuda güvenilir bir bilgi bulamadım, uydurmak istemiyorum.";
-      addMessage({ text:failText, isUser:false });
-    }
-  }
-
-  // ---- Gönderme ----
-  function sendMessage() {
-    const text = inputEl.value.trim();
-    if (!text) return;
-    addMessage({ text, isUser:true });
-    inputEl.value = "";
-    handleBotReply(text);
-  }
-
-  sendBtn.addEventListener("click", sendMessage);
-  inputEl.addEventListener("keydown", e => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      sendMessage();
-    }
-  });
-
-  // ---- Fotoğraf yükleme ----
-  fileBtn.addEventListener("click", () => fileInput.click());
-  fileInput.addEventListener("change", () => {
-    const file = fileInput.files[0];
-    if (!file) return;
-    const url = URL.createObjectURL(file);
-    addMessage({ imageUrl:url, isUser:true, text:"" });
-    setTimeout(() => {
-      addMessage({ text:"Fotoğrafını gördüm reis 📷", isUser:false });
-    }, 400);
-  });
-
-  // ---- Karşılama ----
-  function welcome() {
-    addMessage({
-      text:
-"Selam reis 👑\nBen MØR•AI.\n\n"+
-"• Wikipedia'dan Türkçe özet bulmaya çalışırım\n"+
-"• \"bana kedi resmi gönder\" dersen görsel de gösteririm\n"+
-"• Fotoğraf yüklersen sadece görüntülerim\n"+
-"• Uydurma yok; bilmediğimde açıkça söylerim.\n\n"+
-"/yardım → komut listesi\n"+
-"/temizle → sohbeti sıfırlar\n"+
-"/versiyon → sürümü yazar",
-      isUser:false
+// Backend'e istek atan fonksiyon
+async function askMorAI(message) {
+  try {
+    const res = await fetch(MORAI_BACKEND_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
     });
+
+    if (!res.ok) {
+      console.error("Backend hata:", res.status);
+      return "Reis, beynin tarafında bir sorun var gibi. Birazdan tekrar deneyelim.";
+    }
+
+    const data = await res.json();
+    return data.reply || "Reis, düzgün bir cevap alamadım.";
+  } catch (e) {
+    console.error("İstek hatası:", e);
+    return "Reis, bağlantıda bir sıkıntı var gibi (internet ya da sunucu).";
+  }
+}
+
+// Basit komutlar: /yardım, /temizle, /versiyon
+function handleCommand(cmd) {
+  if (cmd === "/yardım") {
+    addMessage({
+      isUser: false,
+      text:
+        "Komutlar:\n" +
+        "• /yardım → bu liste\n" +
+        "• /temizle → sohbeti siler\n" +
+        "• /versiyon → sürümü söyler",
+    });
+    return true;
   }
 
-  welcome();
+  if (cmd === "/versiyon") {
+    addMessage({
+      isUser: false,
+      text: "MØR•AI v6.0 — GPT destekli, sallama yok reis. 💜",
+    });
+    return true;
+  }
+
+  if (cmd === "/temizle") {
+    if (chatEl) chatEl.innerHTML = "";
+    addMessage({ isUser: false, text: "Sohbeti sıfırladım reis. ✅" });
+    return true;
+  }
+
+  return false;
+}
+
+// Metinden görsel isteği yakalama (\"bana ... resmi gönder\" gibi)
+function detectImageTopic(text) {
+  text = text.toLowerCase();
+  if (text.includes("resmi gönder") || text.includes("fotoğraf gönder")) {
+    // "bana bir aslan resmi gönder" → "aslan"
+    const cleaned = text
+      .replace("bana", "")
+      .replace("bir", "")
+      .replace("resmi gönder", "")
+      .replace("fotoğraf gönder", "")
+      .trim();
+    return cleaned || null;
+  }
+  return null;
+}
+
+// Unsplash üzerinden rastgele görsel
+function showImageFromUnsplash(topic) {
+  const url = `https://source.unsplash.com/600x400/?${encodeURIComponent(
+    topic
+  )}`;
+  addMessage({
+    isUser: false,
+    text: `“${topic}” için bir görsel gösteriyorum 📷`,
+  });
+  addMessage({ isUser: false, text: url, isImage: true });
+}
+
+// Kullanıcı mesajını işleme
+async function handleUserMessage(rawText) {
+  const text = rawText.trim();
+  if (!text) return;
+
+  // Önce kullanıcı balonu
+  addMessage({ text, isUser: true });
+
+  // Komutsa backend'e gitme
+  if (handleCommand(text)) return;
+
+  // Görsel isteği mi?
+  const topic = detectImageTopic(text);
+  if (topic) {
+    showImageFromUnsplash(topic);
+    return;
+  }
+
+  // Normal soru → backend'e sor
+  addMessage({
+    isUser: false,
+    text: "Bakıyorum reis, beyne soruyorum...",
+  });
+
+  const reply = await askMorAI(text);
+  addMessage({ isUser: false, text: reply });
+}
+
+// Gönderme fonksiyonu
+function sendCurrentInput() {
+  if (!inputEl) return;
+  const value = inputEl.value;
+  inputEl.value = "";
+  handleUserMessage(value);
+}
+
+// Eventler
+if (sendBtn) {
+  sendBtn.addEventListener("click", () => {
+    sendCurrentInput();
+  });
+}
+
+if (inputEl) {
+  inputEl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendCurrentInput();
+    }
+  });
+}
+
+// Tema butonu varsa basit dark/light toggle
+if (themeBtn) {
+  themeBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+  });
+}
+
+// Dosya yükleme sadece gösterim için
+if (fileInput) {
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files?.[0];
+    if (!file) return;
+    addMessage({
+      isUser: true,
+      text: `📎 ${file.name} yükledin (şimdilik sadece gösteriyorum).`,
+    });
+  });
+}
+
+// Mic butonu varsa "yakında" mesajı
+if (micBtn) {
+  micBtn.addEventListener("click", () => {
+    addMessage({
+      isUser: false,
+      text: "Sesli konuşma özelliği yakında reis 🎙️",
+    });
+  });
+}
+
+// Sayfa açılınca karşılama mesajı
+addMessage({
+  isUser: false,
+  text:
+    "Selam reis 👑\nBen MØR•AI v6.0.\n\n" +
+    "• GPT beyni ile konuşurum\n" +
+    "• \"bana aslan resmi gönder\" dersen görsel gösteririm\n" +
+    "• /yardım → komutları listeler\n" +
+    "• /temizle → sohbeti sıfırlar\n" +
+    "• /versiyon → sürümü söyler\n\n" +
+    "Hazırsan başlayalım 💜",
+});
 </script>
-</body>
-</html>
