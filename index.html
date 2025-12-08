@@ -240,11 +240,8 @@
   </div>
 
   <script>
-    // ===== BACKEND URL (Vercel) =====
-    // Daha önce konsolda hata veren uzun URL buydu:
-    const MORAI_BACKEND_URL =
-      "https://morai-backend-ihz5aa52u-mehmets-projects-5ba929d4.vercel.app/api/chat";
-    // ================================
+    // Aynı origin: backend ile aynı domain => CORS derdi yok
+    const MORAI_BACKEND_URL = "/api/chat";
 
     const chatEl = document.getElementById("chat");
     const inputEl = document.getElementById("yazi");
@@ -298,7 +295,7 @@
         const res = await fetch(MORAI_BACKEND_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message })
+          body: JSON.stringify({ message }),
         });
 
         if (!res.ok) {
@@ -319,19 +316,14 @@
       if (!text) return;
       inputEl.value = "";
 
-      // Kullanıcı mesajı
       addMessage(text, true);
 
-      // Yazıyor efekti
       const typingRow = addTyping();
 
-      // Backend'e sor
       const reply = await askMorAI(text);
 
-      // Yazıyor efektini kaldır
       removeTyping(typingRow);
 
-      // Bot cevabı
       addMessage(reply, false);
     }
 
@@ -343,12 +335,10 @@
       }
     });
 
-    // Açılış mesajı
     addMessage(
       "Selam reis 👑\nBen MorAI v6 (GPT bağlı sürüm).\n\n" +
-      "• Normal sorular sorabilirsin\n" +
-      "• Sallama yok, emin olmadığım yerde 'bilmiyorum' derim.\n\n" +
-      "Hazırsan başlayalım. 💜",
+      "Artık doğrudan backend'deki GPT beynine bağlıyım.\n" +
+      "Sorularını yaz, ben de cevaplayayım. 💜",
       false
     );
   </script>
